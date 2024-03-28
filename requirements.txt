@@ -1,0 +1,17 @@
+datasets==2.18.0
+exllamav2.egg==info
+fire==0.5.0
+gemma.egg==info
+numpy==1.26.4
+openai==1.14.3
+pandas==2.2.1
+peft==0.10.0
+scikit_learn==1.4.1.post1
+sentence_transformers==2.5.1
+tiktoken==0.6.0
+torch==2.2.1
+torchsort==0.1.9
+tqdm==4.66.2
+transformers==4.38.2
+trl==0.8.1
+vllm==0.3.3

@@ -7,7 +7,7 @@ import torch.optim as optim
 import torchsort
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig, GemmaForCausalLM
 
-from exllama_utils import Perplexity
+from src.utils.exllama_utils import Perplexity
 
 
 class CustomEmbedding(nn.Module):
@@ -81,118 +81,69 @@ end_of_prompt = "<start_of_turn>model\n"
 prompt_end_pos = text.find(end_of_prompt) + len(end_of_prompt) + 1
 prompt_tokens = tokenizer(text[:prompt_end_pos], return_tensors="pt").to(device)["input_ids"][0]
 
-start_of_input = "<start_of_turn>user\n"
-end_of_input = "Convert this into a sea shanty:\n"
+start_of_input = "<start_of_turn>user\nConvert this into a"
+end_of_input = "Convert this into a sea"
 
 input_start_pos = text.find(start_of_input) + len(start_of_input)
 input_end_pos = text.find(end_of_input) + len(end_of_input)
 
 bos_tokens = tokenizer(text[:input_start_pos], return_tensors="pt").to(device)["input_ids"][0]
+
 # input_tokens = tokenizer(text[input_start_pos:input_end_pos], return_tensors="pt").to(device)["input_ids"][0][1:]
-input_tokens = tokenizer("Convert this into a xxx shanty:\n", return_tensors="pt").to(device)[
-    "input_ids"
-][0][1:]
+input_tokens = tokenizer("xxx", return_tensors="pt").to(device)["input_ids"][0][1:]
 # input_tokens = tokenizer("ABC DEF GHI KLM ABC DEF GHI", return_tensors="pt").to(device)["input_ids"][0][1:]
+
 model_tokens = tokenizer(text[input_end_pos:], return_tensors="pt").to(device)["input_ids"][0][1:]
 
-# target_tokens[special_tokens_mask] = -100
-# target_tokens[:len(prompt_tokens) - 1] = -100
-# target_tokens[len(bos_tokens) + len(input_tokens):] = -100
-# target_tokens[:len(bos_tokens) + len(input_tokens)] = -100
-# target_tokens[:len(bos_tokens)] = -100
-# target_tokens = target_tokens.unsqueeze(0)
-
-
-input_pos = (
-    torch.nn.functional.one_hot(input_tokens, len(tokenizer))
-    .to(torch.float16)
-    .requires_grad_(True)
-)
-
-
 bos_embds = model.model.embed_tokens(bos_tokens).clone().detach()
-# input_embds = model.model.embed_tokens(input_tokens).clone().detach().requires_grad_(True)
-input_embds = model.model.embed_tokens(input_tokens).clone().detach()
+input_embds = model.model.embed_tokens(input_tokens).clone().detach().requires_grad_(True)
 model_embds = model.model.embed_tokens(model_tokens).clone().detach()
 
-embds = torch.cat((bos_embds, input_embds, model_embds), 0)
-
-input_org_embds = input_embds.clone().detach()
-org_embds = embds.clone().detach()
-
-closest = torch.argmin(torch.cdist(input_embds, model.model.embed_tokens.embedding.weight), dim=1)
-
 loss_fn = Perplexity()
-optimizer = optim.AdamW([input_pos], lr=1e-3, weight_decay=1e-3)
-# optimizer = optim.LBFGS([input_embds], lr=1e-1, max_iter=10, history_size=100)
-# optimizer = optim.LBFGS([input_pos], lr=1e-1, max_iter=10, history_size=100)
 
+# optimizer = optim.AdamW([input_embds], lr=1e-1)
 
-# pred_tokens = torch.cdist(torch.cat((bos_embds, input_embds), 0), model.model.embed_tokens.embedding.weight).argmin(-1)
-# pred_text = tokenizer.decode(pred_tokens)
-# print(pred_text, "\n\n")
+# with torch.no_grad():
+#     embds = torch.cat((bos_embds, input_embds, model_embds), 0)
+#     pred_tokens = torch.cdist(embds, model.model.embed_tokens.embedding.weight).argmin(-1)
+#     pred_text = tokenizer.decode(pred_tokens)
+#     print(pred_text, "\n\n")
 
+#     bos_embds /= bos_embds.norm(dim=1).unsqueeze(1)
+#     model_embds /= model_embds.norm(dim=1).unsqueeze(1)
 
-def closure():
-    optimizer.zero_grad()
-
-    # input_embds = model.model.embed_tokens(input_pos.argmax(-1))
-    # input_embds = model.model.embed_tokens.embedding.weight[input_pos.argmax(-1)]
-
-    input_embds = (input_pos * 1.0).softmax(1) @ model.model.embed_tokens.embedding.weight
-
-    # input_embds = torchsort.soft_rank(input_pos) @ model.model.embed_tokens.embedding.weight
-
-    embds = torch.cat((bos_embds, input_embds, model_embds), 0)
-
-    pred = model(input_ids=embds.unsqueeze(0), return_dict=True)["logits"]
-
-    pred_pos = pred[:, len(bos_tokens) + len(input_tokens) :]
-    target_tokens_pos = target_tokens[len(bos_tokens) + len(input_tokens) :].unsqueeze(0)
-
-    loss = loss_fn(pred_pos, target_tokens_pos)
-    # loss += input_embds.norm() * 1e-1
-    # loss += (input_embds.norm() - input_org_embds.norm()).pow(2) * 1e-1
-
-    # loss += (embds.norm() - org_embds.norm()).pow(2) * 1e-2
-    loss.backward()
-
-    return loss
+#     embds_norm = embds.norm(dim=1)
 
 
 for i in range(1000):
-    # loss = optimizer.step(closure)
+    # optimizer.zero_grad()
 
-    optimizer.zero_grad()
-
-    input_embds = (input_pos * 1e3).softmax(1) @ model.model.embed_tokens.embedding.weight
     embds = torch.cat((bos_embds, input_embds, model_embds), 0)
 
-    # tokens = torch.cdist(embds, model.model.embed_tokens.embedding.weight).argmin(-1)
-    # embds = model.model.embed_tokens(tokens)
-
     pred = model(input_ids=embds.unsqueeze(0), return_dict=True)["logits"]
-    # loss = loss_fn(pred, target_tokens) + (input_embds.norm() - input_org_embds.norm()).pow(2) * 1e-3
 
     pred_pos = pred[:, len(bos_tokens) + len(input_tokens) :]
     target_tokens_pos = target_tokens[len(bos_tokens) + len(input_tokens) :].unsqueeze(0)
 
     loss = loss_fn(pred_pos, target_tokens_pos)
+
+    # if input_embds.norm().item() < 3 or input_embds.norm().item() > 8:
+    #     loss += 1e-3 * (input_embds.norm() - 5) ** 2
+
     loss.backward()
+    input_embds = (input_embds - 1e-1 * input_embds.grad).clone().detach().requires_grad_(True)
 
-    print(input_pos.grad)
-
-    optimizer.step()
+    # optimizer.step()
 
     # if i % 20 == 0:
     if 1:
         with torch.no_grad():
-            # pred_tokens = torch.cdist(torch.cat((bos_embds, input_embds), 0), model.model.embed_tokens.embedding.weight).argmin(-1)
-            # pred_text = tokenizer.decode(pred_tokens)
+            pred_tokens = torch.cdist(
+                input_embds, model.model.embed_tokens.embedding.weight
+            ).argmin(-1)
+            pred_text = tokenizer.decode(pred_tokens)
 
-            pred_text = tokenizer.decode(input_pos.argmax(-1))
-
-            # print(input_embds.norm().item())
+            print(input_embds.norm().item())
             print(loss.item())
             print(pred_text)
             print("\n\n")

@@ -4,7 +4,7 @@ from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 from tqdm import tqdm
 
-from exllama_utils import ExLLamaModel, Perplexity, get_gemma_prompt
+from src.utils.exllama_utils import ExLLamaModel, Perplexity, get_gemma_prompt
 
 tqdm.pandas()
 
