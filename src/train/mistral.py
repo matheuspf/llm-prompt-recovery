@@ -46,8 +46,8 @@ def get_peft_config():
 
 
 def get_model(model_id: str):
-    gptq_config = GPTQConfig(bits=4, disable_exllama=True)
-    bnb_config = BitsAndBytesConfig(  
+    # quant_config = GPTQConfig(bits=4, disable_exllama=True)
+    quant_config = BitsAndBytesConfig(  
         load_in_4bit=True,
         bnb_4bit_quant_type="nf4",
         bnb_4bit_compute_dtype=torch.bfloat16,
@@ -55,8 +55,7 @@ def get_model(model_id: str):
     )
     model = AutoModelForCausalLM.from_pretrained(
         model_id,
-        # quantization_config=bnb_config,
-        quantization_config=gptq_config,
+        quantization_config=quant_config,
         torch_dtype=torch.bfloat16,
         device_map="auto",
         trust_remote_code=True,
@@ -71,7 +70,6 @@ def get_model(model_id: str):
     tokenizer.add_eos_token = True
 
     return model, tokenizer
-
 
 
 
