@@ -1,14 +1,12 @@
 import os
 import time
-import torch
-from torch import nn
-
-from exllamav2 import model_init, ExLlamaV2Cache
-from exllamav2.generator import ExLlamaV2BaseGenerator, ExLlamaV2Sampler
-
-from transformers import AutoTokenizer, AutoModelForCausalLM
 from threading import Lock
 
+import torch
+from exllamav2 import ExLlamaV2Cache, model_init
+from exllamav2.generator import ExLlamaV2BaseGenerator, ExLlamaV2Sampler
+from torch import nn
+from transformers import AutoModelForCausalLM, AutoTokenizer
 
 # _lock = Lock()
 _tokenizer_cache = {}
@@ -52,13 +50,13 @@ class ExLLamaModel:
     def get_default_args(self):
         return DotDict(
             # {"model_dir": self.model_dir, "length": 8192, "tokens": 128, "max_input_len": 8192}
-#             {"model_dir": self.model_dir}
+            #             {"model_dir": self.model_dir}
             {}
         )
-    
+
     def warmup(self):
-        input_ids = torch.zeros((1, 2), dtype = torch.long)
-        self.model.forward(input_ids, cache = None, input_mask = None, preprocess_only = True)
+        input_ids = torch.zeros((1, 2), dtype=torch.long)
+        self.model.forward(input_ids, cache=None, input_mask=None, preprocess_only=True)
 
     def get_generation_settings(self):
         settings = ExLlamaV2Sampler.Settings()
@@ -81,7 +79,6 @@ class ExLLamaModel:
         model.load_autosplit(cache)
 
         return model, tokenizer, cache
-        
 
     def perplexity(self, prompt: str):
         perp_fn = Perplexity()
@@ -117,9 +114,9 @@ class ExLLamaModel:
                 encode_special_tokens=True,
                 stop_token=stop_token,
             )
-        
+
         gen_text = output.replace(prompt, "").strip()
-        
+
         return gen_text
 
 

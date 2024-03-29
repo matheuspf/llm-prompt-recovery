@@ -1,14 +1,15 @@
-import json
-import pandas as pd
-from tqdm import tqdm
 import copy
-import numpy as np
+import json
 import time
 from pathlib import Path
+
+import numpy as np
+import pandas as pd
 from datasets import load_dataset
+from tqdm import tqdm
+
 from .gpt_utils import call_gpt_api
 from .prompts import gpt_conditioned_prompts_base
-
 
 np.random.seed(27003)
 
@@ -18,7 +19,7 @@ def filter_data(text_list, min_len=300, max_len=3000, max_size=100):
 
     np.random.shuffle(text_list)
     text_list = text_list[:max_size]
-    
+
     return text_list
 
 
@@ -28,7 +29,7 @@ def text_head(text, min_len=300, split="\n"):
 
     while idx < len(text_list) and len(split.join(text_list[:idx])) < min_len:
         idx += 1
-    
+
     text = split.join(text_list[:idx]).strip()
 
     return text
@@ -36,28 +37,24 @@ def text_head(text, min_len=300, split="\n"):
 
 def load_datasets(min_len=300, max_len=3000, max_size=100):
     text_list = []
-    
+
     # https://huggingface.co/datasets/wikipedia
     wikipedia = load_dataset("wikipedia", "20220301.simple", trust_remote_code=True)
     wiki_text = [dct["text"] for dct in wikipedia["train"]]
     # wiki_text = [f'{dct["title"]}\n{dct["text"]}' for dct in wikipedia["train"]]
-    wiki_text = [text_head(text, min_len=2*min_len) for text in wiki_text]
- 
-    
+    wiki_text = [text_head(text, min_len=2 * min_len) for text in wiki_text]
+
     # https://huggingface.co/datasets/multi_news
     multi_news = load_dataset("multi_news", trust_remote_code=True)
     news_text = [dct["summary"].replace("– ", "") for dct in multi_news["train"]]
-
 
     # https://huggingface.co/datasets/webis/tldr-17
     reddit = load_dataset("webis/tldr-17", trust_remote_code=True)
     reddit_text = [dct["content"] for dct in reddit["train"]]
 
-    
     # https://huggingface.co/datasets/imdb
     imdb = load_dataset("imdb", trust_remote_code=True)
     imdb_text = [dct["text"].replace("<br /><br />", "\n") for dct in imdb["train"]]
-
 
     # Merge
     wiki_text = filter_data(wiki_text, min_len=min_len, max_len=max_len, max_size=max_size)
@@ -66,23 +63,23 @@ def load_datasets(min_len=300, max_len=3000, max_size=100):
     imdb_text = filter_data(imdb_text, min_len=min_len, max_len=max_len, max_size=max_size)
 
     text_list = wiki_text + news_text + reddit_text + imdb_text
-    dataset_id = ["wikipedia"] * len(wiki_text) + ["multi_news"] * len(news_text) + ["reddit"] * len(reddit_text) + ["imdb"] * len(imdb_text)
+    dataset_id = (
+        ["wikipedia"] * len(wiki_text)
+        + ["multi_news"] * len(news_text)
+        + ["reddit"] * len(reddit_text)
+        + ["imdb"] * len(imdb_text)
+    )
 
-    data = pd.DataFrame({
-        "original_text": text_list,
-        "dataset_id": dataset_id
-    })
+    data = pd.DataFrame({"original_text": text_list, "dataset_id": dataset_id})
 
     return data
-
 
 
 system_prompt = "You are tasked to design text rewrite prompts for a LLM"
 
 
 def build_fewshot_prompt(dct):
-    prompt = \
-f'''### Input Text:
+    prompt = f'''### Input Text:
 """"""
 {dct["original_text"]}
 """"""
@@ -98,8 +95,7 @@ Subject: {dct["subject"]}
 
 def build_prompt(input_text, content):
     fewshot_prompt = "\n".join([build_fewshot_prompt(dct) for dct in content])
-    prompt = \
-f'''Given an `Input Text`, you will answer:
+    prompt = f'''Given an `Input Text`, you will answer:
 
 - `Type`: What type of text it is
 - `Prompt`: What is a relevant rewrite prompt or edit instruction for text
@@ -129,15 +125,12 @@ def parse_result(result):
     prompt = result[1].split(": ")[1]
     subject = result[2].split(": ")[1]
 
-    return {
-        "type": text_type,
-        "prompt": prompt,
-        "subject": subject
-    }
+    return {"type": text_type, "prompt": prompt, "subject": subject}
+
 
 def get_results(input_text, num_fewshot=5, api_params={}):
     content = copy.deepcopy(gpt_conditioned_prompts_base)
-    
+
     np.random.shuffle(content)
     content = content[:num_fewshot]
 
@@ -149,11 +142,7 @@ def get_results(input_text, num_fewshot=5, api_params={}):
         result = parse_result(result)
     except:
         print("INVALID OUTPUT:\n", result, "\n")
-        result = {
-            "type": "",
-            "prompt": "",
-            "subject": ""
-        }
+        result = {"type": "", "prompt": "", "subject": ""}
 
     return result
 

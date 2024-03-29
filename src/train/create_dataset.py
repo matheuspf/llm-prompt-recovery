@@ -1,29 +1,40 @@
-from datasets import DatasetDict, Dataset
-from itertools import permutations 
+from itertools import permutations
 from pathlib import Path
+
 import pandas as pd
+from datasets import Dataset, DatasetDict
 
 
 def filter_df(df):
     df = df.fillna("")
 
     if "subject" in df.columns:
-        df = df[["original_text", "rewrite_prompt", "rewritten_text", "subject"]].reset_index(drop=True)
-    
+        df = df[["original_text", "rewrite_prompt", "rewritten_text", "subject"]].reset_index(
+            drop=True
+        )
+
     else:
         df = df[["original_text", "rewrite_prompt", "rewritten_text"]].reset_index(drop=True)
 
     df["original_text"] = df["original_text"].apply(lambda x: str(x).strip())
     df["rewritten_text"] = df["rewritten_text"].apply(lambda x: str(x).strip())
     df["rewrite_prompt"] = df["rewrite_prompt"].apply(lambda x: str(x).strip())
-    
-    df = df[df["original_text"].apply(lambda x: len(x) >= 300 and len(x) <= 2000)].reset_index(drop=True)
-    df = df[df["rewritten_text"].apply(lambda x: len(x) >= 200 and len(x) <= 3000)].reset_index(drop=True)
-    df = df[df["rewrite_prompt"].apply(lambda x: len(x) >= 5 and len(x) <= 500)].reset_index(drop=True)
+
+    df = df[df["original_text"].apply(lambda x: len(x) >= 300 and len(x) <= 2000)].reset_index(
+        drop=True
+    )
+    df = df[df["rewritten_text"].apply(lambda x: len(x) >= 200 and len(x) <= 3000)].reset_index(
+        drop=True
+    )
+    df = df[df["rewrite_prompt"].apply(lambda x: len(x) >= 5 and len(x) <= 500)].reset_index(
+        drop=True
+    )
 
     if "subject" in df.columns:
         df["subject"] = df["subject"].apply(lambda x: str(x).strip())
-        df = df[df["subject"].apply(lambda x: len(x) >= 5 and len(x) <= 100)].reset_index(drop=True)
+        df = df[df["subject"].apply(lambda x: len(x) >= 5 and len(x) <= 100)].reset_index(
+            drop=True
+        )
 
     return df
 
@@ -43,16 +54,16 @@ def get_df_val():
 
 def get_perm(df):
     new_rows = []
-    
+
     for idx, row in df.iterrows():
         subject = row["subject"]
         subject_list = [x.strip() for x in subject.split(",")]
-    
+
         for perm in list(permutations(subject_list))[:3]:
             new_row = row.to_dict()
             new_row["subject"] = ", ".join(perm)
             new_rows.append(new_row)
-    
+
     df = pd.DataFrame(new_rows)
     return df
 
@@ -72,11 +83,7 @@ df_train = df_train.head(len(df_train) - 200).copy().reset_index(drop=True)
 train_dataset = Dataset.from_pandas(df_train)
 val_dataset = Dataset.from_pandas(df_val)
 
-dataset_dict = DatasetDict({
-    'train': train_dataset,
-    'validation': val_dataset
-})
+dataset_dict = DatasetDict({"train": train_dataset, "validation": val_dataset})
 
 
 dataset_dict.save_to_disk("/kaggle/input/llm-prompt-rewriting-dataset")
-

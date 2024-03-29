@@ -155,4 +155,3 @@ with open(out_path, "w") as f:
     json.dump(result, f, indent=4)
 
 print(json.dumps(result, indent=4))
-

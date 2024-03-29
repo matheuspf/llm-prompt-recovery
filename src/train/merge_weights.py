@@ -1,12 +1,12 @@
 import torch
 from peft import PeftConfig, PeftModel
-from transformers import BitsAndBytesConfig, AutoTokenizer, AutoModelForCausalLM
+from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 
 weights_path = "mistralai/Mistral-7B-Instruct-v0.2"
-loras_path = "/home/mpf/code/kaggle/llm-prompt/results/checkpoint-5000"
+loras_path = "/mnt/ssd/data/gen_prompt_results_0.65/checkpoint-5000"
 out_path = "./results/merged"
 
-bnb_config = BitsAndBytesConfig(  
+bnb_config = BitsAndBytesConfig(
     load_in_4bit=True,
     bnb_4bit_quant_type="nf4",
     bnb_4bit_compute_dtype=torch.bfloat16,
@@ -17,7 +17,7 @@ model = AutoModelForCausalLM.from_pretrained(
     quantization_config=bnb_config,
     torch_dtype=torch.bfloat16,
     device_map="cuda",
-    trust_remote_code=True
+    trust_remote_code=True,
 )
 
 

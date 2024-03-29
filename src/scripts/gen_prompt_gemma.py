@@ -8,8 +8,9 @@ from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 from tqdm import tqdm
 
-from ..src.utils.data import *
 from src.utils.exllama_utils import ExLLamaModel, Perplexity, get_gemma_prompt
+
+from ..src.utils.data import *
 
 np.random.seed(42)
 
@@ -40,11 +41,11 @@ original_text_list = []
 for text in data["original_text"]:
     text_list = text.strip().split("\n")
     idx = 0
-    
+
     while idx < len(text_list) and len("\n".join(text_list[idx])) < 400:
         idx += 1
     idx += 1
-    
+
     text = "\n".join(text_list[:idx]).strip()
 
     if len(text) > 300 and len(text) < 500:
@@ -92,11 +93,11 @@ with torch.inference_mode():
 
         time_end = time.time()
 
-        gen_text = output.replace(prompt, "").strip() 
+        gen_text = output.replace(prompt, "").strip()
 
         if gen_text[:4].lower() == "sure":
             gen_text = gen_text.split("\n", 1)[1].strip()
-        
+
         original_text.append(text)
         rewritten_text.append(gen_text)
 

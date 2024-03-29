@@ -88,6 +88,7 @@ def formatting_prompts_func(example):
     for i in range(len(example["original_text"])):
         original_text = example["original_text"][i]
         rewritten_text = example["rewritten_text"][i]
+        # prompt = example["rewrite_prompt"][i]
         prompt = example["subject"][i]
 
         text = f'''[INST] Given an original text and the rewritten version of it from a LLM, predict what was the subject of the used prompt for the rewrite.
@@ -106,47 +107,9 @@ Subject:
 """"""
 [/INST] {prompt}
 '''
+
         output_texts.append(text)
     return output_texts
-
-
-# def formatting_prompts_func(example):
-#     output_texts = []
-#     for i in range(len(example['original_text'])):
-#         original_text = example['original_text'][i]
-#         rewritten_text = example['rewritten_text'][i]
-#         prompt = example['rewrite_prompt'][i]
-
-#         text = \
-# f'''[INST] Given the task of understanding how text is rewritten by analyzing the Original Text and Rewritten Text, your goal is to deduce the specific instructions or prompt that was most likely used to generate the rewritten text from the original text. Consider the changes made in terms of style, tone, structure, and content. Assess whether the rewrite focuses on summarization, paraphrasing, stylistic alteration (e.g., formal to informal), or any specific content changes (e.g., making the text more concise, expanding on ideas, or altering the perspective). Follow this steps:
-
-# 1. Read the Original Text: Start by thoroughly understanding the content, style, tone, and purpose of the original text. Note any key themes, technical terms, and the overall message.
-# 2. Analyze the Rewritten Text: Examine how the rewritten text compares to the original. Identify what has been changed, added, or omitted. Pay close attention to changes in style (formal, informal), tone (serious, humorous), structure (paragraph order, sentence structure), and any shifts in perspective or emphasis.
-# 3. Infer the Prompt: Based on your analysis, infer the most likely prompt that guided the rewriting process. Your inference should account for the observed changes in style, tone, structure, and content. Specify the type of task (e.g., summarize, paraphrase, make more accessible to a general audience), any specific directions evident from the changes, and any specific stylistic choice (e.g., 'in the S')
-
-# Based on your analysis return the prompt as if you were given the instruction your self like:
-# "Rewrite this text..."
-# "Transform this ... into ... based on the style of ..."
-
-# Make the prompt short and direct using a maximum of 20 words.
-
-
-# Original Text
-# """"""
-# {original_text}
-# """"""
-
-# Rewritten text:
-# """"""
-# {rewritten_text}
-# """"""
-
-# Prompt:
-# """"""
-# [/INST] {prompt}
-# '''
-#         output_texts.append(text)
-#     return output_texts
 
 
 def get_data_collator(tokenizer):

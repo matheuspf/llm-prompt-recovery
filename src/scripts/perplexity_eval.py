@@ -4,8 +4,9 @@ from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 from tqdm import tqdm
 
-from ..src.utils.data import *
 from src.utils.exllama_utils import ExLLamaModel, Perplexity, get_gemma_prompt
+
+from ..src.utils.data import *
 
 np.random.seed(42)
 
