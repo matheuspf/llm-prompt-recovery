@@ -11,7 +11,7 @@ from tqdm import tqdm
 from .gpt_utils import call_gpt_api
 from .prompts import gpt_conditioned_prompts_base
 
-np.random.seed(27003)
+np.random.seed(27007)
 
 
 def filter_data(text_list, min_len=300, max_len=3000, max_size=100):
@@ -151,8 +151,8 @@ out_path = Path(f"/kaggle/input/gpt_conditioned_prompts")
 out_path.mkdir(parents=True, exist_ok=True)
 dataset_path = out_path / "dataset.csv"
 
-# dataset = load_datasets(min_len=300, max_len=2500, max_size=200)
-# dataset.to_csv(dataset_path, index=False)
+dataset = load_datasets(min_len=300, max_len=2500, max_size=200)
+dataset.to_csv(dataset_path, index=False)
 # print(dataset)
 # import pdb; pdb.set_trace()
 

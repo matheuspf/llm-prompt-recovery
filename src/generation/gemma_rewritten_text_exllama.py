@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
-from ..exllama_utils import ExLLamaModel
+from ..utils.exllama_utils import ExLLamaModel
 
 
 def load_datasets(base_path="/kaggle/input/gpt_conditioned_prompts/proc_dataset"):
@@ -28,6 +28,7 @@ def load_datasets_free_prompt(base_path="/kaggle/input/gpt_conditioned_prompts/p
     new_dfs = []
 
     json_files = sorted(list(Path("/kaggle/input/gpt_free_prompts").glob("*.json")))
+    json_files = [f for f in json_files if f.name != "dataset-metadata.json"]
     json_data = sum([json.load(open(json_file)) for json_file in json_files], [])
 
     for ii in range(iters):
@@ -93,6 +94,4 @@ data["rewritten_text"] = rewritten_text_list
 output_path = Path("/kaggle/input/gemma_rewritten_text_exllama")
 output_path.mkdir(parents=True, exist_ok=True)
 
-time_id = time.strftime("%Y%m%d_%H%M%S")
-# data.to_csv(output_path / f"proc_dataset_{time_id}.csv", index=False)
 data.to_csv(output_path / f"proc_dataset_updated.csv", index=False)

@@ -1,4 +1,13 @@
+# import torch
+# torch.backends.cuda.matmul.allow_tf32 = True
+# torch.backends.cudnn.allow_tf32 = True
+
 from typing import Dict, List, Optional, Union
+import bitsandbytes as bnb
+from torch import nn
+from transformers.trainer_pt_utils import get_parameter_names
+
+
 
 import torch
 from datasets import Dataset, DatasetDict
@@ -22,26 +31,29 @@ from trl import DataCollatorForCompletionOnlyLM, SFTTrainer
 def get_training_args():
     return TrainingArguments(
         output_dir="./results",
-        max_steps=5000,
+        max_steps=20000,
         # num_train_epochs=10,
-        per_device_train_batch_size=3,
-        gradient_accumulation_steps=1,
+        per_device_train_batch_size=2,
+        gradient_accumulation_steps=2,
         optim="paged_adamw_32bit",
         # optim="adamw_8bit",
-        save_steps=500,
-        eval_steps=500,
-        logging_steps=50,
+        save_steps=1000,
+        eval_steps=1000,
+        logging_steps=100,
         evaluation_strategy="steps",
         metric_for_best_model="eval_loss",
         learning_rate=1e-4,
         weight_decay=1e-5,
         fp16=False,
+        # tf32=True,
         bf16=True,
         max_grad_norm=1.0,
         warmup_ratio=0.05,
         group_by_length=True,
         lr_scheduler_type="constant",
-        # report_to="wandb"
+        # report_to="wandb",
+        load_best_model_at_end=True,
+        save_total_limit=50
     )
 
 
@@ -90,6 +102,7 @@ def formatting_prompts_func(example):
         rewritten_text = example["rewritten_text"][i]
         # prompt = example["rewrite_prompt"][i]
         prompt = example["subject"][i]
+        # success = "Yes" if bool(example["is_well_written"][i]) else "No"
 
         text = f'''[INST] Given an original text and the rewritten version of it from a LLM, predict what was the subject of the used prompt for the rewrite.
 
@@ -107,6 +120,23 @@ Subject:
 """"""
 [/INST] {prompt}
 '''
+
+#         text = f'''[INST] Given an original text and the rewritten version of it from a LLM, predict what was the subject of the used prompt for the rewrite as well as if the rewrite was successful or not.
+
+# Original text:
+# """"""
+# {original_text}
+# """"""
+
+# Rewritten text:
+# """"""
+# {rewritten_text}
+# """"""
+
+# Subject: [/INST] {prompt}
+# Success: {success}
+# '
+
 
         output_texts.append(text)
     return output_texts
@@ -197,6 +227,36 @@ class CustomTrainer(SFTTrainer):
         return metrics
 
 
+
+def get_optimizer(model, training_args):
+    decay_parameters = get_parameter_names(model, [nn.LayerNorm])
+    decay_parameters = [name for name in decay_parameters if "bias" not in name]
+    optimizer_grouped_parameters = [
+        {
+            "params": [p for n, p in model.named_parameters() if n in decay_parameters],
+            "weight_decay": training_args.weight_decay,
+        },
+        {
+            "params": [p for n, p in model.named_parameters() if n not in decay_parameters],
+            "weight_decay": 0.0,
+        },
+    ]
+
+    optimizer_kwargs = {
+        "betas": (training_args.adam_beta1, training_args.adam_beta2),
+        "eps": training_args.adam_epsilon,
+    }
+    optimizer_kwargs["lr"] = training_args.learning_rate
+    adam_bnb_optim = bnb.optim.Adam8bit(
+        optimizer_grouped_parameters,
+        betas=(training_args.adam_beta1, training_args.adam_beta2),
+        eps=training_args.adam_epsilon,
+        lr=training_args.learning_rate,
+    )
+
+    return adam_bnb_optim
+
+
 def train(model_id: str, dataset_id: str):
     model, tokenizer = get_model(model_id)
 
@@ -206,14 +266,14 @@ def train(model_id: str, dataset_id: str):
         use_gradient_checkpointing=True,
         gradient_checkpointing_kwargs={"use_reentrant": False},
     )
-    # model = prepare_model_for_kbit_training(model, use_gradient_checkpointing=False)
     model = get_peft_model(model, peft_config)
 
-    # dataset = load_dataset(dataset_id)
     dataset = DatasetDict.load_from_disk(dataset_id)
 
     training_arguments = get_training_args()
     data_collator = get_data_collator(tokenizer)
+    
+    # adam_bnb_optim = get_optimizer(model, training_arguments)
 
     # trainer = CustomTrainer(
     trainer = SFTTrainer(
@@ -229,10 +289,12 @@ def train(model_id: str, dataset_id: str):
         preprocess_logits_for_metrics=preprocess_logits_for_metrics,
         # compute_metrics=T5CosSimMetric(),
         packing=False,
+        # optimizers=(adam_bnb_optim, None)
     )
 
     trainer.train()
     trainer.model.save_pretrained("./results/finetuned_mistral")
+    trainer.tokenizer.save_pretrained("./results/finetuned_mistral")
 
 
 if __name__ == "__main__":

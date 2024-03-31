@@ -3,7 +3,8 @@ from peft import PeftConfig, PeftModel
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 
 weights_path = "mistralai/Mistral-7B-Instruct-v0.2"
-loras_path = "/mnt/ssd/data/gen_prompt_results_0.65/checkpoint-5000"
+# loras_path = "/mnt/ssd/data/gen_prompt_results_0.65/checkpoint-5000"
+loras_path = "./results/finetuned_mistral"
 out_path = "./results/merged"
 
 bnb_config = BitsAndBytesConfig(
@@ -14,7 +15,7 @@ bnb_config = BitsAndBytesConfig(
 )
 model = AutoModelForCausalLM.from_pretrained(
     weights_path,
-    quantization_config=bnb_config,
+    # quantization_config=bnb_config,
     torch_dtype=torch.bfloat16,
     device_map="cuda",
     trust_remote_code=True,

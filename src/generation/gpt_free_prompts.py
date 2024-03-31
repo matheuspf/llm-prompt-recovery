@@ -9,7 +9,7 @@ from tqdm import tqdm
 from .gpt_utils import call_gpt_api
 from .prompts import gpt_free_prompts_base
 
-np.random.seed(27001)
+np.random.seed(27003)
 
 
 system_prompt = "You are tasked to design text rewrite prompts for a LLM"

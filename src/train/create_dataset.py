@@ -8,17 +8,20 @@ from datasets import Dataset, DatasetDict
 def filter_df(df):
     df = df.fillna("")
 
-    if "subject" in df.columns:
-        df = df[["original_text", "rewrite_prompt", "rewritten_text", "subject"]].reset_index(
-            drop=True
-        )
+    # if "subject" in df.columns:
+    #     df = df[["original_text", "rewrite_prompt", "rewritten_text", "subject"]].reset_index(
+    #         drop=True
+    #     )
 
-    else:
-        df = df[["original_text", "rewrite_prompt", "rewritten_text"]].reset_index(drop=True)
+    # else:
+    #     df = df[["original_text", "rewrite_prompt", "rewritten_text"]].reset_index(drop=True)
 
+
+    df = df[["original_text", "rewrite_prompt", "rewritten_text", "subject"]].reset_index(drop=True)
     df["original_text"] = df["original_text"].apply(lambda x: str(x).strip())
     df["rewritten_text"] = df["rewritten_text"].apply(lambda x: str(x).strip())
     df["rewrite_prompt"] = df["rewrite_prompt"].apply(lambda x: str(x).strip())
+    df["subject"] = df["subject"].apply(lambda x: str(x).strip())
 
     df = df[df["original_text"].apply(lambda x: len(x) >= 300 and len(x) <= 2000)].reset_index(
         drop=True
@@ -29,19 +32,31 @@ def filter_df(df):
     df = df[df["rewrite_prompt"].apply(lambda x: len(x) >= 5 and len(x) <= 500)].reset_index(
         drop=True
     )
+    # df = df[df["is_well_written"].apply(lambda x: bool(x))].reset_index(drop=True)
 
-    if "subject" in df.columns:
-        df["subject"] = df["subject"].apply(lambda x: str(x).strip())
-        df = df[df["subject"].apply(lambda x: len(x) >= 5 and len(x) <= 100)].reset_index(
-            drop=True
-        )
+    df["subject"] = df["subject"].apply(lambda x: str(x).strip())
+    df = df[df["subject"].apply(lambda x: len(x) >= 5 and len(x) <= 200)].reset_index(
+        drop=True
+    )
 
     return df
 
 
 def get_df_train():
-    df = pd.read_csv("/kaggle/input/gemma_rewritten_text_exllama/proc_dataset_updated.csv")
+    data_list = [
+        "/kaggle/input/gemma_rewritten_text_exllama/proc_dataset_updated.csv",
+        "/kaggle/input/pedro-data/data_subject.csv",
+        "/kaggle/input/pedro-data/data_subject_2.csv",
+        "/kaggle/input/pedro-data/data_subject_3.csv",
+    ]
+    
+    
+    # df = pd.read_csv("/kaggle/input/gemma_rewritten_text_exllama/proc_dataset_updated.csv")
+    # df = pd.read_csv("/kaggle/input/gemma_rewritten_text_exllama/proc_dataset_updated_evaluated.csv")
+
+    df = pd.concat([pd.read_csv(data) for data in data_list], ignore_index=True)
     df = filter_df(df)
+
     return df
 
 
@@ -71,8 +86,9 @@ def get_perm(df):
 df_train = get_df_train()
 df_train = df_train.sample(frac=1, random_state=42).reset_index(drop=True)
 
-df_val = df_train.tail(500).copy().reset_index(drop=True)
-df_train = df_train.head(len(df_train) - 200).copy().reset_index(drop=True)
+val_sz = 1000
+df_val = df_train.tail(val_sz).copy().reset_index(drop=True)
+df_train = df_train.head(len(df_train) - val_sz).copy().reset_index(drop=True)
 # df_val = get_df_val()
 
 
