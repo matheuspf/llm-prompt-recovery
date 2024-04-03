@@ -23,7 +23,7 @@ def filter_df(df):
     df["rewrite_prompt"] = df["rewrite_prompt"].apply(lambda x: str(x).strip())
     df["subject"] = df["subject"].apply(lambda x: str(x).strip())
 
-    df = df[df["original_text"].apply(lambda x: len(x) >= 300 and len(x) <= 2000)].reset_index(
+    df = df[df["original_text"].apply(lambda x: len(x) >= 200 and len(x) <= 3000)].reset_index(
         drop=True
     )
     df = df[df["rewritten_text"].apply(lambda x: len(x) >= 200 and len(x) <= 3000)].reset_index(
@@ -34,8 +34,7 @@ def filter_df(df):
     )
     # df = df[df["is_well_written"].apply(lambda x: bool(x))].reset_index(drop=True)
 
-    df["subject"] = df["subject"].apply(lambda x: str(x).strip())
-    df = df[df["subject"].apply(lambda x: len(x) >= 5 and len(x) <= 200)].reset_index(
+    df = df[df["subject"].apply(lambda x: len(x) >= 3 and len(x) <= 200)].reset_index(
         drop=True
     )
 
@@ -45,16 +44,20 @@ def filter_df(df):
 def get_df_train():
     data_list = [
         "/kaggle/input/gemma_rewritten_text_exllama/proc_dataset_updated.csv",
-        "/kaggle/input/pedro-data/data_subject.csv",
-        "/kaggle/input/pedro-data/data_subject_2.csv",
-        "/kaggle/input/pedro-data/data_subject_3.csv",
+        # "/kaggle/input/pedro-data/data_subject.csv",
+        # "/kaggle/input/pedro-data/data_subject_2.csv",
+        # "/kaggle/input/pedro-data/data_subject_3.csv",
     ]
     
+    # data_list = [
+    #     "/kaggle/input/gemma_rewritten_text_exllama_bkp/proc_dataset_updated.csv"
+    # ]
     
     # df = pd.read_csv("/kaggle/input/gemma_rewritten_text_exllama/proc_dataset_updated.csv")
     # df = pd.read_csv("/kaggle/input/gemma_rewritten_text_exllama/proc_dataset_updated_evaluated.csv")
 
     df = pd.concat([pd.read_csv(data) for data in data_list], ignore_index=True)
+    # df = pd.read_csv(data_list[0])
     df = filter_df(df)
 
     return df
@@ -86,9 +89,9 @@ def get_perm(df):
 df_train = get_df_train()
 df_train = df_train.sample(frac=1, random_state=42).reset_index(drop=True)
 
-val_sz = 1000
-df_val = df_train.tail(val_sz).copy().reset_index(drop=True)
-df_train = df_train.head(len(df_train) - val_sz).copy().reset_index(drop=True)
+val_sz = 500
+df_val = df_train.iloc[-val_sz:].copy().reset_index(drop=True)
+df_train = df_train.iloc[:-val_sz].copy().reset_index(drop=True)
 # df_val = get_df_val()
 
 

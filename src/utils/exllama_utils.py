@@ -115,8 +115,14 @@ class ExLLamaModel:
                 stop_token=stop_token,
             )
 
-        gen_text = output.replace(prompt, "").strip()
+        # gen_text = output.replace(prompt, "").strip()
 
+        len_prompt = len(prompt)
+
+        if prompt.startswith("<s>"):
+            len_prompt -= 3
+
+        gen_text = output[len_prompt:]
         return gen_text
 
 

@@ -31,44 +31,31 @@ def load_datasets_free_prompt(base_path="/kaggle/input/gpt_conditioned_prompts/p
     json_files = [f for f in json_files if f.name != "dataset-metadata.json"]
     json_data = sum([json.load(open(json_file)) for json_file in json_files], [])
 
-    for ii in range(num_iters):
-        np.random.shuffle(json_data)
-        new_df = base_df.copy()
-        new_df["prompt"] = [dct["prompt"] for dct in json_data[: len(new_df)]]
-        new_df["subject"] = [dct["subject"] for dct in json_data[: len(new_df)]]
-        new_dfs.append(new_df)
-
-    df = pd.concat([base_df] + new_dfs, ignore_index=True)
-
-    return df
+    return json_data
 
 
-def get_prompt(dct, num_prompts=3):
-    system_prompt = "You will rewrite LLM prompts while keeping the original subject"
+def get_prompt(org_prompt, num_prompts=3):
+    system_prompt = "You will rewrite LLM prompts while keeping the main idea of it"
     prompt = \
-f'''Given a LLM prompt and the extracted subject from it, you will rewrite the prompt while keeping the original subject intact.
+f'''Given a LLM prompt for a text rewriting task, you will rewrite the prompt while keeping the original idea intact.
 
-Your input will be:
+Your input will be a prom
 
-- prompt: The original prompt that you will rewrite
-- subject: The subject extracted from the prompt, a few words describing the core of it
+- prompt: The original prompt that you will rewrite while keeping the original idea, the subject of the rewrite intact
 
 Your output will be:
 
 - rewritten_prompts: A list of size {num_prompts} containing the rewritten prompts, each different from each other and the original prompt
 
-Pay attention to the prompt content and the specific wording used in the original prompt. Try to diversify the rewritten prompts as much as possible while keeping the original subject intact.
+Pay attention to the prompt content and the specific wording used in the original prompt. Try to diversify the rewritten prompts as much as possible while keeping the basic task the same.
 
 Begin!
 
-```
-prompt: {dct["rewrite_prompt"]}
-subject: {dct["subject"]}
-```
+prompt: {org_prompt}
 '''
     function_dct = {
         "name": "rewrite_prompts",
-        "description": "Rewrite a LLM prompt while keeping the original subject intact",
+        "description": "Rewrite a LLM prompt while keeping the original idea intact",
         "parameters": {
             "type": "object",
             "properties": {
@@ -88,37 +75,54 @@ subject: {dct["subject"]}
     return system_prompt, prompt, function_dct
 
 
-data = load_datasets_free_prompt()
+def rewrite_prompts(unique_prompts):
+    rewritten_prompts = []
+
+    for org_prompt in tqdm(unique_prompts):
+        system_prompt, prompt, function_dct = get_prompt(org_prompt, num_prompts=4)
+        response = call_gpt_api(prompt, system_prompt=system_prompt, function_dct=function_dct)
+        
+        if "rewritten_prompts" not in response:
+            print("Error:\n\n", prompt)
+            continue
+
+        rewritten_prompts.append(
+            {
+                "original_prompt": org_prompt,
+                "rewritten_prompts": response["rewritten_prompts"]
+            }
+        )
+
+        print("Original prompt: ", org_prompt)
+        print("New prompts : ", response["rewritten_prompts"])
+        print("-"*100)
+    
+    return rewritten_prompts
+
+
+
 # data = load_datasets()
-data["rewrite_prompt"] = data["prompt"]
-data = data.drop("prompt", axis=1)
+# unique_prompts = data["prompt"].unique()
 
-new_rows = []
+data = load_datasets_free_prompt()
+unique_prompts = list(set([d["prompt"] for d in data]))
 
-data = data.head(10)
+# Paralelize the call to rewrite_prompts
 
-for idx, row in tqdm(data.iterrows(), total=len(data)):
-    system_prompt, prompt, function_dct = get_prompt(row, num_prompts=1)
-    response = call_gpt_api(prompt, system_prompt=system_prompt, function_dct=function_dct)
-    
-    if "rewritten_prompts" not in response:
-        print("Error:\n\n", prompt)
-        continue
+from joblib import Parallel, delayed
 
-    rewritten_prompts = response["rewritten_prompts"]
+n_jobs = 4
 
-    print("Original prompt: ", row["rewrite_prompt"])
-    print("New prompts : ", rewritten_prompts)
-    print("Subject: ", row["subject"])
-    print("-"*100)
-    
-    for rewritten_prompt in rewritten_prompts:
-        new_row = row.copy()
-        new_row["rewritten_text"] = rewritten_prompt
-        new_rows.append(new_row)
+rewritten_prompts = Parallel(n_jobs=n_jobs, backend="threading")(
+    delayed(rewrite_prompts)(unique_prompts[ii::n_jobs]) for ii in range(n_jobs)
+)
 
-new_data = pd.concat([data] + new_rows, ignore_index=True)
 
-output_path = Path("/kaggle/input/gpt_conditioned_prompts_rewrite")
-output_path.mkdir(parents=True, exist_ok=True)
-new_data.to_csv(output_path / f"dataset.csv", index=False)
+print(len(unique_prompts), len(rewritten_prompts))
+
+output_path = Path("/kaggle/input/gpt_prompts_rewrite")
+output_path.mkdir(exist_ok=True, parents=True)
+
+# with open(output_path / "conditioned_prompts.json", "w") as f:
+with open(output_path / "free_prompts.json", "w") as f:
+    json.dump(rewritten_prompts, f, indent=4)

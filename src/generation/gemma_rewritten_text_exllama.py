@@ -13,11 +13,32 @@ from ..utils.exllama_utils import ExLLamaModel
 def load_datasets(base_path="/kaggle/input/gpt_conditioned_prompts/proc_dataset"):
     csv_list = sorted(list(Path(base_path).glob("*.csv")))
     # df = pd.read_csv(csv_list[0])
-    df = pd.concat([pd.read_csv(csv) for csv in csv_list], ignore_index=True)
+    df = pd.concat([pd.read_csv(csv) for csv in csv_list], ignore_index=True).fillna("")
 
     df = df[df["original_text"].apply(lambda x: len(x) >= 300 and len(x) <= 2000)].reset_index(
         drop=True
     )
+    df = df[df["prompt"].apply(lambda x: len(x) >= 5 and len(x) <= 500)].reset_index(
+        drop=True
+    )
+
+    rewrite_prompts = json.load(open("/kaggle/input/gpt_prompts_rewrite/conditioned_prompts.json"))
+    rewrite_prompts = sum(rewrite_prompts, [])
+    rewrite_prompts = {dct["original_prompt"]: dct["rewritten_prompts"] for dct in rewrite_prompts}
+    
+    new_df_rows = []
+    
+    for idx, row in df.iterrows():
+        new_df_rows.append(row.copy())
+
+        new_prompts = rewrite_prompts[row["prompt"]]
+
+        for prompt in new_prompts:
+            new_row = row.copy()
+            new_row["prompt"] = prompt
+            new_df_rows.append(new_row)
+    
+    df = pd.DataFrame(new_df_rows).reset_index(drop=True)
 
     return df
 
@@ -53,6 +74,8 @@ def proc_output(output):
 
 
 model = ExLLamaModel("/mnt/ssd/data/Gemma-7B-it-exl2")
+# model = ExLLamaModel("/home/mpf/.cache/huggingface/hub/models--TechxGenus--gemma-2b-it-GPTQ/snapshots/60eca81e07a0854c2a28c0c3408e6ce7fba0d54f/")
+# model = ExLLamaModel("/home/mpf/code/exllamav2/gemma_2b_exl2")
 
 
 # USER_CHAT_TEMPLATE = "<start_of_turn>user\n{prompt}<end_of_turn>\n<start_of_turn>model\n"
@@ -64,8 +87,9 @@ USER_CHAT_TEMPLATE = """<start_of_turn>user
 rewrite_data = []
 
 
-# data = load_datasets()
-data = load_datasets_free_prompt()
+data = load_datasets()
+
+# data = load_datasets_free_prompt()
 # data = data.head(10)
 data["rewrite_prompt"] = data["prompt"]
 data = data.drop("prompt", axis=1)
@@ -91,7 +115,9 @@ for idx, row in tqdm(data.iterrows(), total=len(data)):
 
 data["rewritten_text"] = rewritten_text_list
 
-output_path = Path("/kaggle/input/gemma_rewritten_text_exllama")
+# output_path = Path("/kaggle/input/gemma_rewritten_text_exllama")
+output_path = Path("/kaggle/input/gemma_rewritten_text_exllama_rewrite")
 output_path.mkdir(parents=True, exist_ok=True)
 
-data.to_csv(output_path / f"proc_dataset_updated.csv", index=False)
+# data.to_csv(output_path / f"proc_dataset_updated.csv", index=False)
+data.to_csv(output_path / f"conditioned_dataset.csv", index=False)

@@ -26,22 +26,23 @@ from transformers import (
     pipeline,
 )
 from trl import DataCollatorForCompletionOnlyLM, SFTTrainer
+from transformers import DataCollatorForLanguageModeling
+from unsloth import FastLanguageModel
 
 
 def get_training_args():
     return TrainingArguments(
         output_dir="./results",
-        max_steps=20000,
+        max_steps=3000,
         # num_train_epochs=10,
-        per_device_train_batch_size=2,
-        gradient_accumulation_steps=2,
-        optim="paged_adamw_32bit",
-        # optim="adamw_8bit",
-        save_steps=1000,
-        eval_steps=1000,
-        logging_steps=100,
+        per_device_train_batch_size=4,
+        gradient_accumulation_steps=1,
+        # optim="paged_adamw_32bit",
+        optim="adamw_8bit",
+        save_steps=200,
+        eval_steps=200,
+        logging_steps=20,
         evaluation_strategy="steps",
-        metric_for_best_model="eval_loss",
         learning_rate=1e-4,
         weight_decay=1e-5,
         fp16=False,
@@ -49,10 +50,12 @@ def get_training_args():
         bf16=True,
         max_grad_norm=1.0,
         warmup_ratio=0.05,
-        group_by_length=True,
+        # group_by_length=True,
         lr_scheduler_type="constant",
         # report_to="wandb",
+        metric_for_best_model="eval_loss",
         load_best_model_at_end=True,
+        greater_is_better=False,
         save_total_limit=50
     )
 
@@ -60,7 +63,7 @@ def get_training_args():
 def get_peft_config():
     return LoraConfig(
         lora_alpha=16,
-        lora_dropout=0.1,
+        lora_dropout=0.2,
         r=8,
         bias="none",
         task_type="CAUSAL_LM",
@@ -76,21 +79,39 @@ def get_model(model_id: str):
         bnb_4bit_compute_dtype=torch.bfloat16,
         bnb_4bit_use_double_quant=True,
     )
-    model = AutoModelForCausalLM.from_pretrained(
+    # model = AutoModelForCausalLM.from_pretrained(
+    model, tokenizer = FastLanguageModel.from_pretrained(
         model_id,
-        quantization_config=quant_config,
-        torch_dtype=torch.bfloat16,
+        # quantization_config=quant_config,
+        load_in_4bit=True,
+        max_seq_length=2048,
+        # torch_dtype=torch.bfloat16,
+        dtype=torch.bfloat16,
         device_map="auto",
         trust_remote_code=True,
     )
     model.config.use_cache = False
     model.config.pretraining_tp = 1
-    model.gradient_checkpointing_enable()
+    # model.gradient_checkpointing_enable()
 
-    tokenizer = AutoTokenizer.from_pretrained(model_id, trust_remote_code=True)
+    # tokenizer = AutoTokenizer.from_pretrained(model_id, trust_remote_code=True)
     tokenizer.padding_side = "right"
     tokenizer.pad_token = tokenizer.eos_token
     tokenizer.add_eos_token = True
+    
+    model = FastLanguageModel.get_peft_model(
+        model,
+        r=8,
+        lora_alpha=16,
+        target_modules = ["q_proj", "k_proj", "v_proj", "o_proj",
+                        "gate_proj", "up_proj", "down_proj",],
+        lora_dropout=0., # Supports any, but = 0 is optimized
+        bias="none",    # Supports any, but = "none" is optimized
+        use_gradient_checkpointing=True,
+        random_state=27001,
+        use_rslora=False,  # We support rank stabilized LoRA
+        loftq_config=False, # And LoftQ
+    )
 
     return model, tokenizer
 
@@ -100,11 +121,11 @@ def formatting_prompts_func(example):
     for i in range(len(example["original_text"])):
         original_text = example["original_text"][i]
         rewritten_text = example["rewritten_text"][i]
-        # prompt = example["rewrite_prompt"][i]
-        prompt = example["subject"][i]
+        prompt = example["rewrite_prompt"][i]
+        subject = example["subject"][i]
         # success = "Yes" if bool(example["is_well_written"][i]) else "No"
 
-        text = f'''[INST] Given an original text and the rewritten version of it from a LLM, predict what was the subject of the used prompt for the rewrite.
+        text = f'''[INST] Given an original text and the rewritten version of it from a LLM, predict what was the prompt and subject used for the rewrite.
 
 Original text:
 """"""
@@ -115,35 +136,18 @@ Rewritten text:
 """"""
 {rewritten_text}
 """"""
+[/INST]
 
-Subject:
-""""""
-[/INST] {prompt}
+Prompt: {prompt}
+Subject: {subject}
 '''
-
-#         text = f'''[INST] Given an original text and the rewritten version of it from a LLM, predict what was the subject of the used prompt for the rewrite as well as if the rewrite was successful or not.
-
-# Original text:
-# """"""
-# {original_text}
-# """"""
-
-# Rewritten text:
-# """"""
-# {rewritten_text}
-# """"""
-
-# Subject: [/INST] {prompt}
-# Success: {success}
-# '
-
 
         output_texts.append(text)
     return output_texts
 
 
 def get_data_collator(tokenizer):
-    user_tag = '"\n[/INST] '
+    user_tag = '"\n[/INST]\n'
     response_template_ids = tokenizer.encode(user_tag, add_special_tokens=False)[2:-1]
     data_collator = DataCollatorForCompletionOnlyLM(response_template_ids, tokenizer=tokenizer)
     return data_collator
@@ -157,116 +161,17 @@ def preprocess_logits_for_metrics(logits, labels):
     return logits.argmax(dim=-1)
 
 
-class T5CosSimMetric:
-    def __init__(self):
-        self.t5 = SentenceTransformer("sentence-transformers/sentence-t5-base")
-        self.gts_embds = None
-
-    def __call__(self, gts_text, preds_text):
-        if self.gts_embds is None:
-            self.gts_embds = self.t5.encode(gts_text, normalize_embeddings=True, batch_size=32)
-
-        gts_embds = self.gts_embds
-        preds_embds = self.t5.encode(preds_text, normalize_embeddings=True, batch_size=32)
-        cos_sim = torch.nn.functional.cosine_similarity(gts_embds, preds_embds, dim=1)
-        cos_sim = cos_sim**3
-
-        metric = cos_sim.mean().item()
-
-        return metric
-
-
-class CustomTrainer(SFTTrainer):
-    def evaluate(
-        self,
-        eval_dataset: Optional[Union[Dataset, Dict[str, Dataset]]] = None,
-        ignore_keys: Optional[List[str]] = None,
-        metric_key_prefix: str = "eval",
-    ) -> Dict[str, float]:
-        eval_dataset = eval_dataset or self.eval_dataset
-        data = self.data_collator(eval_dataset["input_ids"])
-        data["input_ids"] = data["input_ids"].to(self.args.device)
-
-        preds_text = []
-        gts_text = []
-
-        pbar = tqdm(zip(data["input_ids"], data["labels"]), total=len(data["input_ids"]))
-        for input_ids, labels in pbar:
-            with torch.no_grad():
-                pad_pos = (input_ids == self.tokenizer.pad_token_id).long().argmax()
-                labels_pos = (labels != -100).long().argmax()
-
-                labels = labels[labels_pos:pad_pos]
-                input_ids = input_ids[: pad_pos - len(labels)]
-
-                pred_ids = self.model.generate(
-                    input_ids.unsqueeze(0),
-                    generation_config=GenerationConfig(
-                        use_cache=False,
-                        max_new_tokens=20,
-                        do_sample=False,
-                        pad_token_id=self.tokenizer.pad_token_id,
-                    ),
-                )[0]
-
-                gt_text = self.tokenizer.decode(labels)
-                pred_text = self.tokenizer.decode(pred_ids[input_ids.shape[0] :])
-
-                gts_text.append(gt_text)
-                preds_text.append(pred_text)
-
-        t5_cos_sim = self.compute_metrics(gts_text, preds_text)
-        metrics = {f"{metric_key_prefix}_t5_cos_sim": t5_cos_sim}
-
-        self.log(metrics)
-        self.control = self.callback_handler.on_evaluate(
-            self.args, self.state, self.control, metrics
-        )
-        self._memory_tracker.stop_and_update_metrics(metrics)
-
-        return metrics
-
-
-
-def get_optimizer(model, training_args):
-    decay_parameters = get_parameter_names(model, [nn.LayerNorm])
-    decay_parameters = [name for name in decay_parameters if "bias" not in name]
-    optimizer_grouped_parameters = [
-        {
-            "params": [p for n, p in model.named_parameters() if n in decay_parameters],
-            "weight_decay": training_args.weight_decay,
-        },
-        {
-            "params": [p for n, p in model.named_parameters() if n not in decay_parameters],
-            "weight_decay": 0.0,
-        },
-    ]
-
-    optimizer_kwargs = {
-        "betas": (training_args.adam_beta1, training_args.adam_beta2),
-        "eps": training_args.adam_epsilon,
-    }
-    optimizer_kwargs["lr"] = training_args.learning_rate
-    adam_bnb_optim = bnb.optim.Adam8bit(
-        optimizer_grouped_parameters,
-        betas=(training_args.adam_beta1, training_args.adam_beta2),
-        eps=training_args.adam_epsilon,
-        lr=training_args.learning_rate,
-    )
-
-    return adam_bnb_optim
-
 
 def train(model_id: str, dataset_id: str):
     model, tokenizer = get_model(model_id)
 
-    peft_config = get_peft_config()
-    model = prepare_model_for_kbit_training(
-        model,
-        use_gradient_checkpointing=True,
-        gradient_checkpointing_kwargs={"use_reentrant": False},
-    )
-    model = get_peft_model(model, peft_config)
+    # peft_config = get_peft_config()
+    # model = prepare_model_for_kbit_training(
+    #     model,
+    #     use_gradient_checkpointing=True,
+    #     gradient_checkpointing_kwargs={"use_reentrant": False},
+    # )
+    # model = get_peft_model(model, peft_config)
 
     dataset = DatasetDict.load_from_disk(dataset_id)
 
@@ -280,7 +185,7 @@ def train(model_id: str, dataset_id: str):
         model=model,
         train_dataset=dataset["train"],
         eval_dataset=dataset["validation"],
-        peft_config=peft_config,
+        # peft_config=peft_config,
         max_seq_length=2048,
         tokenizer=tokenizer,
         args=training_arguments,
@@ -290,6 +195,7 @@ def train(model_id: str, dataset_id: str):
         # compute_metrics=T5CosSimMetric(),
         packing=False,
         # optimizers=(adam_bnb_optim, None)
+        dataset_num_proc=4
     )
 
     trainer.train()
@@ -298,4 +204,7 @@ def train(model_id: str, dataset_id: str):
 
 
 if __name__ == "__main__":
-    train("mistralai/Mistral-7B-Instruct-v0.2", "/kaggle/input/llm-prompt-rewriting-dataset")
+    # train("mistralai/Mistral-7B-Instruct-v0.2", "/kaggle/input/llm-prompt-rewriting-dataset")
+    train("unsloth/mistral-7b-instruct-v0.2-bnb-4bit", "/kaggle/input/llm-prompt-rewriting-dataset")
+    # train("teknium/OpenHermes-2.5-Mistral-7B", "/kaggle/input/llm-prompt-rewriting-dataset")
+    # train("Open-Orca/OpenOrca-Platypus2-13B", "/kaggle/input/llm-prompt-rewriting-dataset")
