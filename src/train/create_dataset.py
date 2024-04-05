@@ -44,9 +44,9 @@ def filter_df(df):
 def get_df_train():
     data_list = [
         "/kaggle/input/gemma_rewritten_text_exllama/proc_dataset_updated.csv",
-        # "/kaggle/input/pedro-data/data_subject.csv",
-        # "/kaggle/input/pedro-data/data_subject_2.csv",
-        # "/kaggle/input/pedro-data/data_subject_3.csv",
+        "/kaggle/input/pedro-data/data_subject.csv",
+        "/kaggle/input/pedro-data/data_subject_2.csv",
+        "/kaggle/input/pedro-data/data_subject_3.csv",
     ]
     
     # data_list = [

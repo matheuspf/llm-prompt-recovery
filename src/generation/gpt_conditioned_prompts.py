@@ -147,32 +147,37 @@ def get_results(input_text, num_fewshot=5, api_params={}):
     return result
 
 
-out_path = Path(f"/kaggle/input/gpt_conditioned_prompts")
-out_path.mkdir(parents=True, exist_ok=True)
-dataset_path = out_path / "dataset.csv"
+def run():
+    out_path = Path(f"/kaggle/input/gpt_conditioned_prompts")
+    out_path.mkdir(parents=True, exist_ok=True)
+    dataset_path = out_path / "dataset.csv"
 
-dataset = load_datasets(min_len=300, max_len=2500, max_size=200)
-dataset.to_csv(dataset_path, index=False)
-# print(dataset)
-# import pdb; pdb.set_trace()
+    dataset = load_datasets(min_len=300, max_len=2500, max_size=200)
+    dataset.to_csv(dataset_path, index=False)
+    # print(dataset)
+    # import pdb; pdb.set_trace()
 
-dataset = pd.read_csv(dataset_path)
+    dataset = pd.read_csv(dataset_path)
 
-api_params = {"system_prompt": system_prompt, "model": "gpt-3.5-turbo", "temperature": 0.5}
-results = []
+    api_params = {"system_prompt": system_prompt, "model": "gpt-3.5-turbo", "temperature": 0.5}
+    results = []
 
-for idx, row in tqdm(dataset.iterrows(), total=len(dataset)):
-    result = get_results(row["original_text"], num_fewshot=5, api_params=api_params)
-    results.append(result)
+    for idx, row in tqdm(dataset.iterrows(), total=len(dataset)):
+        result = get_results(row["original_text"], num_fewshot=5, api_params=api_params)
+        results.append(result)
 
-keys = results[0].keys()
-results = {key: [dct[key] for dct in results] for key in keys}
+    keys = results[0].keys()
+    results = {key: [dct[key] for dct in results] for key in keys}
 
-proc_dataset = pd.concat([dataset, pd.DataFrame(results)], axis=1)
+    proc_dataset = pd.concat([dataset, pd.DataFrame(results)], axis=1)
 
 
-time_id = time.strftime("%Y%m%d_%H%M%S")
-proc_dataset_path = out_path / "proc_dataset" / f"{time_id}.csv"
-proc_dataset_path.parent.mkdir(parents=True, exist_ok=True)
+    time_id = time.strftime("%Y%m%d_%H%M%S")
+    proc_dataset_path = out_path / "proc_dataset" / f"{time_id}.csv"
+    proc_dataset_path.parent.mkdir(parents=True, exist_ok=True)
 
-proc_dataset.to_csv(proc_dataset_path, index=False)
+    proc_dataset.to_csv(proc_dataset_path, index=False)
+
+
+if __name__ == "__main__":
+    run()

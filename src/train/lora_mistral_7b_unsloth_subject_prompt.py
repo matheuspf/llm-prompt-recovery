@@ -39,7 +39,8 @@ def create_dataset_item(df_row):
         "rewritten_text": df_row.rewritten_text,
     }
     # json_output = {"prompt": df_row.rewrite_prompt}
-    json_output = {"subject": df_row.subject}
+    # json_output = {"subject": df_row.subject}
+    json_output = {"prompt": df_row.rewrite_prompt, "subject": df_row.subject}
     return {
         "input": json.dumps(json_input),
         "output": json.dumps(json_output),
@@ -71,12 +72,17 @@ Given the task of understanding how text is rewritten by analyzing the original_
 
 1. Read the original_text: Start by thoroughly understanding the content, style, tone, and purpose of the original text. Note any key themes, technical terms, and the overall message.
 2. Analyze the rewritten_text: Examine how the rewritten text compares to the original. Identify what has been changed, added, or omitted. Pay close attention to changes in style (formal, informal), tone (serious, humorous), structure (paragraph order, sentence structure), and any shifts in perspective or emphasis.
-3. Infer the Prompt subject: Based on your analysis, infer the most likely prompt content that guided the rewriting process. Your inference should account for the observed changes in style, tone, structure, and content.
+3. Infer the Propt: Based on your analysis, infer the most likely prompt that was used to rewrite original_text into rewritten_text. Your inference should account for the observed changes in style, tone, structure, and content.
+3. Infer the Prompt subject: The core idea or subject of the prompt is the main focus of the rewriting process, a few words that capture the essence of the rewrite.
 
-Based on your analysis return the subject of the prompt, a few words containing the main idea of it.
+Based on your analysis return the prompt and its subject in the following JSON format:
 
 Return your answer using the following JSON structure:
-{{"subject": "Your best guess for the prompt subject used to generate the rewritten text from the original text."}}
+
+{{
+    "prompt": "Your best guess for the prompt used to generate the rewritten text from the original text.",
+    "subject": "The core idea or subject of the prompt, a few words that capture the essence of the rewrite."
+}}
 
 Return a valid JSON as output and nothing more.
 
@@ -169,7 +175,7 @@ trainer = SFTTrainer(
     args=transformers.TrainingArguments(
         output_dir="./results",
         warmup_steps=0,
-        num_train_epochs=2,
+        num_train_epochs=3,
         per_device_train_batch_size=16,
         learning_rate=5e-5, # Want a small lr for finetuning
         gradient_accumulation_steps=1,
@@ -180,13 +186,13 @@ trainer = SFTTrainer(
         logging_dir="./results/logs",
         bf16=True,
         evaluation_strategy="steps",
-        eval_steps=200,
+        eval_steps=100,
         save_strategy="steps",
-        save_steps=200,
+        save_steps=100,
         metric_for_best_model="eval_loss",
         load_best_model_at_end=True,
         greater_is_better=False,
-        save_total_limit=20
+        save_total_limit=50
     ),
     data_collator=data_collator,
 )

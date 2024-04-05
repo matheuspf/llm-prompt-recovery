@@ -81,7 +81,7 @@ model_0 = ExLLamaModel("/home/mpf/code/kaggle/llm-prompt/results/exl2")
 
 # model = ExLLamaModel("/mnt/ssd/data/Smaug-34B-v0.1-4.0bpw-h6-exl2", args={"length": 4096, "max_input_len": 4096})
 
-t5 = SentenceTransformer("sentence-transformers/sentence-t5-base", device="cpu")
+t5 = SentenceTransformer("sentence-transformers/sentence-t5-base", device="cuda:0")
 
 scores = []
 # line_break_token = model.tokenizer.encode("\n")[0][-1]
@@ -90,20 +90,20 @@ iter_num = 1
 
 
 for idx, row in tqdm(df.iterrows(), total=len(df)):
-    # prompt = get_prompt_subject(row)
-    gen_text = model_0.generate(prompt, max_tokens=32)  # , stop_token=line_break_token)
-    # gen_text = gen_text.split("\n")[0].strip()
-
-    prompt = get_prompt_json(row)
+    prompt = get_prompt_subject(row)
     gen_text = model_0.generate(prompt, max_tokens=32)
-    gen_text = json_parser_from_chat_response(gen_text)["subject"]
+    gen_text = gen_text.split("\n")[0].strip()
+
+    # prompt = get_prompt_json(row)
+    # gen_text = model_0.generate(prompt, max_tokens=32)
+    # gen_text = json_parser_from_chat_response(gen_text)["subject"]
 
     pred_prompt = gen_text
     
-    # pred_prompt = f'Please improve the following text rewriting it with the subject: "{gen_text}", using the writing style of , maintaining the original meaning but altering the tone, diction, and stylistic elements to match the new style. Enhance the clarity, elegance, and impact of the following text by adopting the writing style of , ensuring the core message remains intact while transforming the tone, word choice, and stylistic features to align with the specified style.'
+    pred_prompt = f'Please improve the following text rewriting it with the subject: "{gen_text}", using the writing style of , maintaining the original meaning but altering the tone, diction, and stylistic elements to match the new style. Enhance the clarity, elegance, and impact of the following text by adopting the writing style of , ensuring the core message remains intact while transforming the tone, word choice, and stylistic features to align with the specified style.'
     # pred_prompt = f'Retell text into this conveyed human piece if make such {gen_text}.'
     # pred_prompt = f'Improve rephrase text conveying portrayal tone throughout {gen_text}.'
-    pred_prompt = f'Improve rephrase text manner this written to has language tone within to {gen_text}.'
+    # pred_prompt = f'Improve rephrase text manner this written to has language tone within to {gen_text}.'
     
     
     score = get_embds_score(t5, pred_prompt, row["rewrite_prompt"])
@@ -126,4 +126,4 @@ print(np.mean(scores))
 
 
 
-# 0.6651
+# 0.6116
