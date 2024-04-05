@@ -13,12 +13,57 @@ from ..utils.exllama_utils import ExLLamaModel
 from ..evaluation.prompts import *
 from Levenshtein import ratio
 from .data import *
+from itertools import permutations, chain
+
+def get_permutations(x, max_length):
+    return list(chain.from_iterable(permutations(x, r) for r in range(1, max_length + 1)))
 
 
+def clean_text(text):
+    # return "".join([t for t in text if t.isalpha() or t in (" ",)]).lower()
+    return text
+
+
+def find_optimal_subject(t5, mean_prompt, df, max_words=3, max_test = 10000):
+    best_subjects = []
+
+    mean_prompt = clean_text(mean_prompt) + " {{subject}}"
+    scores_list = []
+    
+    # for idx, row in tqdm(df.iterrows(), total=len(df)):
+    for idx, row in df.iterrows():
+        prompt = clean_text(row["rewrite_prompt"])
+
+        prompt_words = prompt.split(" ")
+        prompt_words = get_permutations(prompt_words, max_words)
+        prompt_words = sorted(prompt_words, key=lambda x: len(x), reverse=True)
+        prompt_words = prompt_words[:max_test]
+
+        prompts = [clean_text(mean_prompt.replace("{{subject}}", " ".join(words))) for words in prompt_words]
+        embds = t5.encode(prompts + [prompt], normalize_embeddings=True, show_progress_bar=False, batch_size=512)
+
+        scores = (cosine_similarity(embds[:-1], embds[-1].reshape(1, -1)) ** 3)[0]
+
+        best_words = prompt_words[np.argmax(scores)]
+        best_subject = " ".join(best_words)
+
+        print(prompt[:50], " | ", best_subject, " | ", np.max(scores))
+
+        scores_list.append(np.max(scores))
+        best_subjects.append(best_subject) 
+
+        print(np.mean(scores_list))
+    
+    df["best_subject"] = best_subjects
+
+    return df 
+
+        
+        
 
 def get_mean_prompt():
-    # return "Rewrite this text convey manner human evokes text better exude genre plath tone cut include object being about please further wise this individuals could originally convey here."
-    return "Rewrite this lucrarea tone text conveyimprove lucrareaENCE prompt / text wiseOf lucrareaEleDearrepede].phraseol stuff appealingOF a bourneggcontemporainR."
+    return "Rewrite this text convey manner human evokes text better exude genre plath tone cut include object being about please further wise this individuals could originally convey here."
+    # return "conveying rephraselucrarea textimprovelucrarealucrarea formal paragraph help please creativelywstlucrarea tonealterations ence text comportthislucrarea messageresemblepoeticallylucrarea casuallyoper talkingpresentingstoryinvolvesmemo essrecommendtransformingthisdetailsresponsivephrasethr reframe esstagline writerell it"
 
 
 def eval_mean_prompt(model, t5, mean_prompt):
@@ -34,7 +79,8 @@ def eval_mean_prompt(model, t5, mean_prompt):
         
         pred_prompt = mean_prompt.replace("{{subject}}", subject)
 
-        score = get_embds_score(t5, pred_prompt, row["rewrite_prompt"])
+        # score = get_embds_score(t5, pred_prompt, row["rewrite_prompt"])
+        score = get_embds_score(t5, clean_text(pred_prompt), clean_text(row["rewrite_prompt"]))
         scores.append(score)
 
         print(subject)
@@ -63,12 +109,14 @@ def eval_mean_prompt(model, t5, mean_prompt):
 
 
 
-df = get_gen_sel_dataset()
-df_gpt = get_dataset_gpt()
-print(len(df))
-df = df[~df["rewrite_prompt"].isin(set(df_gpt["rewrite_prompt"].values))].reset_index(drop=True)
-print(len(df))
-df = df.head(100)
+df = get_dataset_pedro()
+
+# df = get_gen_sel_dataset()
+# df_gpt = get_dataset_gpt()
+# print(len(df))
+# df = df[~df["rewrite_prompt"].isin(set(df_gpt["rewrite_prompt"].values))].reset_index(drop=True)
+# print(len(df))
+# df = df.head(100)
 
 
 mean_prompt = get_mean_prompt()
@@ -79,6 +127,10 @@ print(len(mean_prompt_list), mean_prompt_list)
 model = ExLLamaModel("/mnt/ssd/data/gen_prompt_results_0.65/exl2")
 
 t5 = SentenceTransformer("sentence-transformers/sentence-t5-base", device="cuda:0")
+
+
+
+df = find_optimal_subject(t5, get_mean_prompt(), df, max_words=3)
 
 mean_scores = {}
 

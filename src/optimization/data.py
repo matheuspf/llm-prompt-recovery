@@ -107,7 +107,8 @@ def get_dataset_pedro():
 
 
 def get_dataset_pedro_lowercase():
-    prompts = json.load(open("/home/mpf/code/kaggle/pedro-llm-prompt/data/prompts_selected_processed.json"))
+    # prompts = json.load(open("/home/mpf/code/kaggle/pedro-llm-prompt/data/prompts_selected_processed.json"))
+    prompts = json.load(open("/home/mpf/code/kaggle/pedro-llm-prompt/data/prompts_selected_new_processed_005.json"))
     df = pd.DataFrame({"rewrite_prompt": prompts})
     return df
 
