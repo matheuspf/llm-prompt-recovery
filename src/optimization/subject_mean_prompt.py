@@ -63,7 +63,9 @@ def find_optimal_subject(t5, mean_prompt, df, max_words=3, max_test = 1000):
 def get_mean_prompt():
     # return "Rewrite this text convey manner human evokes text better exude genre plath tone cut include object being about please further wise this individuals could originally convey here."
     # return "conveying rephraselucrarea textimprovelucrarealucrarea formal paragraph help please creativelywstlucrarea tonealterations ence text comportthislucrarea messageresemblepoeticallylucrarea casuallyoper talkingpresentingstoryinvolvesmemo essrecommendtransformingthisdetailsresponsivephrasethr reframe esstagline writerell it"
-    return "rephrase text better lucrarea lucrarea tone style discours involving a lucrarea creatively adv detail write this emulate casually sender lucrarea srl recompose a text contents"
+    # return "rephrase text better lucrarea lucrarea tone style discours involving a lucrarea creatively adv detail write this emulate casually sender lucrarea srl recompose a text contents"
+    # return "rephrase text better lucrarea lucrarea tone style discours possible involving a lucrarea write this piece elucidate send casual lucrarea"
+    return "rephrase text better lucrarea lucrarea tone style discours possible involving a lucrarea write this piece elucidate send casual details lucrarea recommend alter phrases as lucrarea llm convincingly lucrarea"
 
 
 def eval_mean_prompt(model, t5, mean_prompt):
@@ -135,7 +137,7 @@ df = find_optimal_subject(t5, get_mean_prompt(), df, max_words=3)
 mean_scores = {}
 
 # for pos in tqdm(range(1, len(mean_prompt_list) + 1)):
-for pos in tqdm(range(len(mean_prompt_list)+1, len(mean_prompt_list) + 2)):
+for pos in tqdm(range(1, len(mean_prompt_list) + 2)):
     cur_mean_prompt_list = copy.deepcopy(mean_prompt_list)
     cur_mean_prompt_list.insert(pos, '{{subject}}')
     # cur_mean_prompt_list.insert(pos, '"{{subject}}"')

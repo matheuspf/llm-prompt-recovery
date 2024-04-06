@@ -1,150 +1,212 @@
 [
     {
-        "score": 0.5158448815345764,
-        "text": "reword"
+        "step": 0,
+        "score": 0.5174947381019592,
+        "text": "wordiness"
     },
     {
-        "score": 0.5822036862373352,
-        "text": "rephrase text"
+        "step": 1,
+        "score": 0.5907806754112244,
+        "text": "improve intext"
     },
     {
-        "score": 0.6107921600341797,
-        "text": "rephrase text lucrarea"
+        "step": 2,
+        "score": 0.6156070232391357,
+        "text": "improve textedition this"
     },
     {
-        "score": 0.6332445740699768,
-        "text": "text improve rephrase lucrarea"
+        "step": 3,
+        "score": 0.6359442472457886,
+        "text": "improve text rephrase lucrarea"
     },
     {
-        "score": 0.6381630301475525,
-        "text": "rephrase text better lucrarea tone"
+        "step": 4,
+        "score": 0.6436337828636169,
+        "text": "improve rephrase text lucrarea tone"
     },
     {
-        "score": 0.645599901676178,
-        "text": "rephrase text better lucrarea tone involved"
+        "step": 5,
+        "score": 0.6487067341804504,
+        "text": "improve rephrasing text lucrarea tone lucrarea"
     },
     {
-        "score": 0.6526046991348267,
-        "text": "rephrase text better lucrarea tone involved lucrarea"
+        "step": 6,
+        "score": 0.6533221006393433,
+        "text": "improve rephrase text lucrarea tone form lucrarea"
     },
     {
-        "score": 0.6560814380645752,
-        "text": "rephrase text better lucrarea style tone involved lucrarea"
+        "step": 7,
+        "score": 0.6565331816673279,
+        "text": "improve rephrase text lucrarea tone possible form lucrarea"
     },
     {
-        "score": 0.6581662893295288,
-        "text": "rephrase text better lucrarea tone style lucrarea message involved"
+        "step": 8,
+        "score": 0.6588952541351318,
+        "text": "improve phrasing text lucrarea tone lucrarea rewrite this convey"
     },
     {
-        "score": 0.6617191433906555,
-        "text": "rephrase text better lucrarea lucrarea tone style discours involving lucrarea"
+        "step": 9,
+        "score": 0.6626953482627869,
+        "text": "improve phrasing text lucrarea tone lucrarea rewrite this conveying lucrarea"
     },
     {
-        "score": 0.6646689176559448,
-        "text": "rephrase text better lucrarea lucrarea tone style discours involving a lucrarea"
+        "step": 10,
+        "score": 0.6667630076408386,
+        "text": "rephrase text better lucrarea lucrarea tone style discours possible involving lucrarea"
     },
     {
-        "score": 0.6673545241355896,
-        "text": "rephrase text better lucrarea lucrarea tone style discours involving lucrarea write it"
+        "step": 11,
+        "score": 0.6690714359283447,
+        "text": "rephrase text better lucrarea lucrarea tone style discours possible penned involving lucrarea"
     },
     {
-        "score": 0.6705615520477295,
-        "text": "rephrase text better lucrarea lucrarea tone style discours involving a lucrarea write it"
+        "step": 12,
+        "score": 0.6721040606498718,
+        "text": "rephrase text better lucrarea lucrarea tone style discours possible involving writing this lucrarea"
     },
     {
-        "score": 0.6715400815010071,
-        "text": "rephrase text better lucrarea lucrarea tone style discours involving a lucrarea srl write it"
+        "step": 13,
+        "score": 0.6736100316047668,
+        "text": "rephrase text better lucrarea lucrarea tone style discours possible involving a lucrarea write it"
     },
     {
-        "score": 0.6725466251373291,
-        "text": "rephrase text better lucrarea lucrarea tone style discours involving a lucrarea srl write this text"
+        "step": 14,
+        "score": 0.6742990016937256,
+        "text": "rephrase text better lucrarea lucrarea tone style discours possible involving a lucrarea write this text"
     },
     {
-        "score": 0.6743305325508118,
-        "text": "rephrase text better lucrarea lucrarea tone style discours involving a lucrarea creatively ple write this texte"
+        "step": 15,
+        "score": 0.6757673025131226,
+        "text": "improve phrasing text lucrarea tone lucrarea rewrite this creatively formalize discours involving lucrarea text like lucrarea"
     },
     {
-        "score": 0.6757705807685852,
-        "text": "rephrase text better lucrarea lucrarea tone style discours involving a lucrarea write this text creatively ple detail"
+        "step": 16,
+        "score": 0.6768777370452881,
+        "text": "improve phrasing text lucrarea tone lucrarea rewrite this creatively formalize discours involving lucrarea text anyone conveys lucrarea"
     },
     {
-        "score": 0.6766160130500793,
-        "text": "rephrase text better lucrarea lucrarea tone style discours involving a lucrarea creatively ple write this texte especially casually"
+        "step": 17,
+        "score": 0.6780858635902405,
+        "text": "improve phrasing text lucrarea tone lucrarea rewrite this creatively formalize discours involving lucrarea text anyone detail emulates lucrarea"
     },
     {
-        "score": 0.6779657006263733,
-        "text": "rephrase text better lucrarea lucrarea tone style discours involving a lucrarea write this text creatively ple detail casually behalf"
+        "step": 18,
+        "score": 0.678828239440918,
+        "text": "rephrase text better lucrarea lucrarea tone style discours possible involving a penned lucrarea urgent detail creatively casualize a lucrarea"
     },
     {
-        "score": 0.6797642111778259,
-        "text": "rephrase text better lucrarea lucrarea tone style discours involving a lucrarea creatively adv detail write this emulate casually sender lucrarea"
+        "step": 19,
+        "score": 0.680184543132782,
+        "text": "improve phrasing text lucrarea tone lucrarea rewrite this creatively formalize discours involving lucrarea anyone emulate description sends lucrarea perspective text"
     },
     {
-        "score": 0.6808261871337891,
-        "text": "rephrase text better lucrarea lucrarea tone style discours involving a lucrarea creatively adv detail write this emulate casually sender contents lucrarea"
+        "step": 20,
+        "score": 0.6806318759918213,
+        "text": "improve phrasing text lucrarea tone lucrarea rewrite this creatively formalize discours involving lucrarea anyone emulate lucrarea description send if casual prospective"
     },
     {
-        "score": 0.6814806461334229,
-        "text": "rephrase text better lucrarea lucrarea tone style discours involving a lucrarea creatively adv detail write this emulate casually reprezentanţi send rh lucrarea"
+        "step": 21,
+        "score": 0.6811413764953613,
+        "text": "improve phrasing text lucrarea tone lucrarea rewrite this creatively formalize discours involving lucrarea anyone emulate lucrarea description send casual viewpoint text lucrarea"
     },
     {
-        "score": 0.6819031238555908,
-        "text": "rephrase text better lucrarea lucrarea tone style discours involving a lucrarea creatively adv detail write this emulate casually reprezentanţi oph send ter lucrarea"
+        "step": 22,
+        "score": 0.6819376349449158,
+        "text": "improve phrasing text lucrarea tone lucrarea rewrite this creatively formalize discours involving lucrarea anyone emulate lucrarea description send casual viewpoint text lucrarea more"
     },
     {
-        "score": 0.6824641823768616,
-        "text": "rephrase text better lucrarea lucrarea tone style discours involving a lucrarea creatively adv detail write this emulate casually sender lucrarea srl recompose text contents"
+        "step": 23,
+        "score": 0.6825849413871765,
+        "text": "rephrase text better lucrarea lucrarea tone style discours possible involving writing this lucrarea elucidate send casual lucrarea story etc change it befitting highly lucrarea"
     },
     {
-        "score": 0.6833491325378418,
-        "text": "rephrase text better lucrarea lucrarea tone style discours involving a lucrarea creatively adv detail write this emulate casually sender lucrarea srl recompose a text contents"
+        "step": 24,
+        "score": 0.6838316917419434,
+        "text": "rephrase text better lucrarea lucrarea tone style discours possible involving writing this lucrarea elucidate send casual lucrarea story etc change it describing lucrarea slogan etc"
     },
     {
-        "score": 0.6837135553359985,
-        "text": "rephrase text better lucrarea lucrarea tone style discours involving a lucrarea creatively adv detail write this emulate casually sender lucrarea srl recompose a text contents lucrarea"
+        "step": 25,
+        "score": 0.6838152408599854,
+        "text": "improve phrasing text lucrarea tone lucrarea rewrite this creatively formalize discours involving lucrarea anyone emulate lucrarea description send if casual perspective com lucrarea alter text further"
     },
     {
-        "score": 0.6844369769096375,
-        "text": "rephrase text better lucrarea lucrarea tone style discours involving a lucrarea creatively adv detail write this emulate casually sender lucrarea srl recompose a text moved wid lucrarea"
+        "step": 26,
+        "score": 0.6845353841781616,
+        "text": "improve phrasing text lucrarea tone lucrarea rewrite this creatively formalize discours involving lucrarea anyone emulate lucrarea description send casual viewpoint text lucrarea n alter it somewhere more"
     },
     {
-        "score": 0.6849030256271362,
-        "text": "rephrase text better lucrarea lucrarea tone style discours involving a lucrarea creatively adv detail write this emulate casually sender lucrarea srl recompose a text changing lucrarea tone contents"
+        "step": 27,
+        "score": 0.6849316954612732,
+        "text": "improve phrasing text lucrarea tone lucrarea rewrite this creatively formalize discours involving lucrarea anyone emulate lucrarea description send if casual perspective com lucrarea alter text further involving it"
     },
     {
-        "score": 0.6856961250305176,
-        "text": "rephrase text better lucrarea lucrarea tone style discours involving a lucrarea creatively adv detail write this emulate casually sender lucrarea srl recompose a text occur ines eam l permettra"
+        "step": 28,
+        "score": 0.6854903101921082,
+        "text": "improve phrasing text lucrarea tone lucrarea rewrite this creatively formalize discours involving lucrarea anyone emulate lucrarea description send casual perspective information alter it lucrarea llm plotline speaker suggest etc"
     },
     {
-        "score": 0.6862244009971619,
-        "text": "rephrase text better lucrarea lucrarea tone style discours involving a lucrarea creatively adv detail write this emulate casually sender lucrarea srl recompose a text moved wid elte reprezentanţi standpoint lucrarea"
+        "step": 29,
+        "score": 0.68619704246521,
+        "text": "improve phrasing text lucrarea tone lucrarea rewrite this creatively formalize discours involving lucrarea anyone emulate lucrarea description send casual perspective information alter it lucrarea llm plotline speaker suggest com back"
     },
     {
-        "score": 0.6867083311080933,
-        "text": "rephrase text better lucrarea lucrarea tone style discours involving a lucrarea creatively adv detail write this emulate casually sender lucrarea srl recompose a text moved wid elte tone entity standpoint lucrarea"
+        "step": 30,
+        "score": 0.6869152188301086,
+        "text": "improve phrasing text lucrarea tone lucrarea rewrite this creatively formalize discours involving lucrarea anyone emulate lucrarea description send casual perspective information alter it lucrarea llm plotline speech like above recompose lucrarea"
     },
     {
-        "score": 0.6876227855682373,
-        "text": "rephrase text better lucrarea lucrarea tone style discours involving a lucrarea creatively adv detail write this emulate casually sender lucrarea srl recompose a text moved wid elte tone entity standpoint ines permettra"
+        "step": 31,
+        "score": 0.6875205636024475,
+        "text": "improve phrasing text lucrarea tone lucrarea rewrite this creatively formalize discours involving lucrarea anyone emulate lucrarea description send casual perspective information alter it lucrarea llm plotline speaker suggest youd elegy lucrarea more"
     },
     {
-        "score": 0.6878398060798645,
-        "text": "rephrase text better lucrarea lucrarea tone style discours involving a lucrarea creatively adv detail write this emulate casually sender lucrarea srl recompose a text moved wid părți tone т ple réaliser rh permettra"
+        "step": 32,
+        "score": 0.6879817843437195,
+        "text": "improve phrasing text lucrarea tone lucrarea rewrite this creatively formalize discours involving lucrarea anyone emulate lucrarea description send casual perspective information alter it lucrarea ss plotline speaker recommend doing such elegy lucrarea more"
     },
     {
-        "score": 0.688395082950592,
-        "text": "rephrase text better lucrarea lucrarea tone style discours involving a lucrarea creatively adv detail write this emulate casually sender lucrarea srl recompose a text moved wid părți tone form т ple réaliser rh permettra"
+        "step": 33,
+        "score": 0.6887570023536682,
+        "text": "improve phrasing text lucrarea tone lucrarea rewrite this creatively formalize discours involving lucrarea anyone emulate lucrarea description send casual perspective information alter it lucrarea ss plotline speaker recommend doing if elegy lucrarea tone more"
     },
     {
-        "score": 0.688874363899231,
-        "text": "rephrase text better lucrarea lucrarea tone style discours involving a lucrarea creatively adv detail write this emulate casually sender lucrarea srl recompose a text moved wid părți tone form т ple abil r l permettra"
+        "step": 34,
+        "score": 0.6893803477287292,
+        "text": "improve phrasing text lucrarea tone lucrarea rewrite this creatively formalize discours involving lucrarea anyone emulate lucrarea description send casual perspective information alter it lucrarea ss plotline speaker recommend doing if this elegy lucrarea tone more"
     },
     {
-        "score": 0.6896035671234131,
-        "text": "rephrase text better lucrarea lucrarea tone style discours involving a lucrarea creatively adv detail write this emulate casually sender lucrarea srl recompose a text moved wid părți tone form т ple abil r l oph consideră"
+        "step": 35,
+        "score": 0.689753532409668,
+        "text": "improve phrasing text lucrarea tone lucrarea rewrite this creatively formalize discours involving lucrarea anyone emulate lucrarea description send casual perspective information alter it lucrarea ss plotline speaker recommend doing if elegy tone related paragraph lucrarea more"
     },
     {
-        "score": 0.68991619348526,
-        "text": "rephrase text better lucrarea lucrarea tone style discours involving a lucrarea creatively adv detail write this emulate casually sender lucrarea srl recompose a text moved wid părți tone form т ple effectue doved a eam ll permettra"
+        "step": 36,
+        "score": 0.6901276707649231,
+        "text": "improve phrasing text lucrarea tone lucrarea rewrite this creatively formalize discours involving lucrarea anyone emulate lucrarea description send casual perspective information alter it lucrarea ss plotline speaker recommend doing if elegy tone related paragraph etc lucrarea more"
+    },
+    {
+        "step": 37,
+        "score": 0.6906198263168335,
+        "text": "improve phrasing text lucrarea tone lucrarea rewrite this creatively formalize discours involving lucrarea anyone emulate lucrarea description send casual perspective information alter it lucrarea ss plotline speaker recommend doing if elegy tone related paragraph com etc lucrarea more"
+    },
+    {
+        "step": 38,
+        "score": 0.6907804012298584,
+        "text": "improve phrasing text lucrarea tone lucrarea rewrite this creatively formalize discours involving lucrarea anyone emulate lucrarea description send casual perspective information alter it lucrarea ss plotline speaker recommend doing if elegy tone lucrarea more com paraphrase n send this"
+    },
+    {
+        "step": 39,
+        "score": 0.6912842392921448,
+        "text": "improve phrasing text lucrarea tone lucrarea rewrite this creatively formalize discours involving lucrarea anyone emulate lucrarea description send casual perspective information alter it lucrarea ss plotline speaker recommend doing if elegy tone pass com etc lucrarea ss above paraphrase more"
+    },
+    {
+        "step": 40,
+        "score": 0.6915860772132874,
+        "text": "improve phrasing text lucrarea tone lucrarea rewrite this creatively formalize discours involving lucrarea anyone emulate lucrarea description send casual perspective information alter it lucrarea ss plotline speaker recommend doing if elegy tone lucrarea more com n paraphrase it and forward uss"
+    },
+    {
+        "step": 41,
+        "score": 0.691984236240387,
+        "text": "improve phrasing text lucrarea tone lucrarea rewrite this creatively formalize discours involving lucrarea anyone emulate lucrarea description send casual perspective information alter it lucrarea ss plotline speaker recommend doing if elegy tone lucrarea more com n paraphrase it and send re lucrarea"
     }
 ]

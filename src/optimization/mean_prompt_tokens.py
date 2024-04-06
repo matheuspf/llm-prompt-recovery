@@ -13,12 +13,45 @@ from transformers import AutoTokenizer
 from sklearn.metrics.pairwise import cosine_similarity
 from .data import *
 
+from nltk.corpus import wordnet as wn
 
 
 USE_ALPHA = True
 BATCH_SIZE = 512
 NUM_PROCESSES = 2
-LOAD_STATE = True
+LOAD_STATE = False
+
+
+def clean_text(text):
+    return "".join([t for t in text if t.isalpha() or t in (" ",)]).lower()
+
+
+
+
+def get_synonyms():
+    words = [
+        "reword", "modify", "rewrite", "convey", "exude", "rephrase", "text", "better", "lucrarea", 
+        "tone", "style", "discours", "involving", "creatively", "detail", "write", "this", "emulate",
+        "casually", "sender", "recompose", "text", "moved", "genre", "evokes", "recreate", "reword",
+        "involved", "help", "message", "essay", "creative", "vibe", "formal", "talk", "writer",
+        "alter", "resemble", "poetically", "presenting", "story", "involves", "memo", "recommend",
+        "it", "this", "reframe", "especially", "occur", "improve", "currently", "form", "standpoint",
+        "line", "changing", "contents", "entity", "phrasing", "pattern"
+    ]
+
+    # Function to find synonyms using WordNet
+    def find_synonyms(word):
+        synonyms = set()
+        for syn in wn.synsets(word):
+            for lemma in syn.lemmas():
+                synonyms.add(lemma.name())
+        return list(synonyms)
+
+    # Get synonyms for each word in the list
+    synonyms_dict = {word: find_synonyms(word) for word in words}
+    words_list = list(synonyms_dict.keys()) + sum(list(synonyms_dict.values()), [])
+
+    return words_list
 
 
 def get_top_words_base(text_list):
@@ -28,7 +61,7 @@ def get_top_words_base(text_list):
         words = text.split()
         
         for word in words:
-            word = "".join(filter(str.isalnum, word)).lower().strip()
+            word = clean_text(word).strip()
             
             if not word:
                 continue
@@ -49,18 +82,14 @@ def get_top_words_base(text_list):
     return all_words
 
 
-def get_top_words_vocab(text_list, t5, embds, frac=0.2):
-    base_words = get_top_words_base(text_list)
-    
+def get_top_words_vocab(t5, embds, frac=0.2):
     tokenizer = AutoTokenizer.from_pretrained("sentence-transformers/sentence-t5-base")
     vocab_keys = list(tokenizer.get_vocab().keys())
     vocab_keys = [k for k in vocab_keys if k not in tokenizer.all_special_tokens and k not in ("", "▁")]
     vocab_keys = [k.replace("▁", "") for k in vocab_keys]
 
-    all_words = base_words + vocab_keys
-    all_words = ["".join(c for c in word if c.isalpha()).lower() for word in all_words]
+    all_words = [clean_text(word) for word in vocab_keys]
     all_words = [w for w in all_words if len(w) > 0]
-
     all_words = list(set(all_words))
 
     all_text = [get_text([word]) for word in all_words]
@@ -71,6 +100,22 @@ def get_top_words_vocab(text_list, t5, embds, frac=0.2):
     num_words = int(frac * len(all_words))
     all_words = [all_words[i] for i in top_words_idx[:num_words]]
 
+    return all_words
+
+
+def get_top_words(text_list, t5, embds, frac=0.2):
+    words_base = get_top_words_base(text_list)
+    vocab_words = get_top_words_vocab(t5, embds, frac)
+    words_pub = get_top_words_base(get_dataset_pub()["rewrite_prompt"].tolist())
+    words_gpt = get_top_words_base(get_dataset_gpt()["rewrite_prompt"].tolist())
+    common_words = open("/kaggle/input/common_words.txt", "r").read().split("\n")
+    synonyms = get_synonyms()
+
+    # all_words = list(set(words_base + words_pub + words_gpt + vocab_words + common_words + synonyms))
+    all_words = list(set(words_base + words_pub + words_gpt + common_words + synonyms))
+    all_words = [clean_text(word) for word in all_words]
+    all_words = list(set(all_words))
+    
     # all_words = all_words + [w + " " for w in all_words]
 
     return all_words
@@ -78,6 +123,7 @@ def get_top_words_vocab(text_list, t5, embds, frac=0.2):
 
 def get_text(words_list):
     text = " ".join(words_list)
+    # text = "".join(words_list)
     return text
     
     # text = text.replace(" ,", ",").replace(" .", ".").replace(" :", ":")
@@ -162,7 +208,7 @@ def optimize_prompt(t5, embds, top_words, beam_width=50, num_steps=15, batch_siz
 
         print("\n", step, best[1], get_text(best[0]), len(all_beams), "\n")
 
-        result = {"score": float(best[1]), "text": get_text(best[0])}
+        result = {"step": int(step), "score": float(best[1]), "text": get_text(best[0])}
         best_step_result.append(result)
 
         pickle.dump(all_beams, open("state.pkl", "wb"))
@@ -190,7 +236,7 @@ def run():
     t5 = SentenceTransformer("sentence-transformers/sentence-t5-base", device=device)
 
     embds = t5.encode(text_list, normalize_embeddings=True, show_progress_bar=True, batch_size=BATCH_SIZE)
-    top_words = get_top_words_vocab(text_list, t5, embds)
+    top_words = get_top_words(text_list, t5, embds)
 
     print(f"Num examples: {len(text_list)}")
     print(f"Num words: {len(top_words)}")
