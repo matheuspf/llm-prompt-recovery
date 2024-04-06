@@ -1,4 +1,5 @@
 import torch
+import copy
 import pickle
 from torch.multiprocessing import Pool
 
@@ -19,7 +20,7 @@ from nltk.corpus import wordnet as wn
 USE_ALPHA = True
 BATCH_SIZE = 512
 NUM_PROCESSES = 2
-LOAD_STATE = False
+LOAD_STATE = True
 
 
 def clean_text(text):
@@ -105,7 +106,7 @@ def get_top_words_vocab(t5, embds, frac=0.2):
 
 def get_top_words(text_list, t5, embds, frac=0.2):
     words_base = get_top_words_base(text_list)
-    vocab_words = get_top_words_vocab(t5, embds, frac)
+    # vocab_words = get_top_words_vocab(t5, embds, frac=frac)
     words_pub = get_top_words_base(get_dataset_pub()["rewrite_prompt"].tolist())
     words_gpt = get_top_words_base(get_dataset_gpt()["rewrite_prompt"].tolist())
     common_words = open("/kaggle/input/common_words.txt", "r").read().split("\n")
@@ -144,6 +145,34 @@ def get_beam_score(words, embd_score, alpha=0.1):
     # return embd_score / (1.0 + alpha * np.log2(1.0 + len(words)))
     return embd_score
 
+
+def test_iters(t5, embds, beam, top_words, batch_size=128, iters=5):
+    for itx in tqdm(range(iters)):
+        sel_words, _, prev_score = beam
+        new_text_list = []
+        
+        for i in tqdm(range(len(sel_words))):
+            for word in top_words:
+                text_cp = copy.deepcopy(sel_words)
+                text_cp[i] = word
+                new_text_list.append(get_text(text_cp))
+        
+        all_embds = t5.encode(new_text_list, normalize_embeddings=True, show_progress_bar=True, batch_size=batch_size)
+        scores = (cosine_similarity(embds, all_embds) ** 3).mean(axis=0)
+        score_idx = scores.argsort()[::-1]
+        
+        best_score = scores[score_idx[0]]
+        best_words = new_text_list[score_idx[0]].split(" ")
+        
+        beam = (best_words, best_score, get_beam_score(best_words, best_score))
+
+        print("\n")
+        print(prev_score, best_score)
+        print(best_words)
+        print("\n\n")
+    
+    import pdb; pdb.set_trace()
+        
 
 def get_beams(params):
     all_beams, top_words, embds, t5, batch_size, proc_idx = params
@@ -212,7 +241,6 @@ def optimize_prompt(t5, embds, top_words, beam_width=50, num_steps=15, batch_siz
         best_step_result.append(result)
 
         pickle.dump(all_beams, open("state.pkl", "wb"))
-
         with open("./src/optimization/mean_prompt_sel_tokens_updated_alpha.json", "w") as f:
             json.dump(best_step_result, f, indent=4, ensure_ascii=False)
 
@@ -241,7 +269,12 @@ def run():
     print(f"Num examples: {len(text_list)}")
     print(f"Num words: {len(top_words)}")
 
-    best_step_result = optimize_prompt(t5, embds, top_words, beam_width=100, num_steps=50, batch_size=BATCH_SIZE)
+    # all_beams = pickle.load(open("state.pkl", "rb"))
+    # beam = all_beams[0]
+    # test_iters(t5, embds, beam, top_words, batch_size=BATCH_SIZE)
+    # exit()
+
+    best_step_result = optimize_prompt(t5, embds, top_words, beam_width=400, num_steps=70, batch_size=BATCH_SIZE)
     best = best_step_result[-1]
 
     print(best)
