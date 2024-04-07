@@ -2,6 +2,8 @@ import torch
 from sentence_transformers import SentenceTransformer
 import torch.nn.functional as F
 from .data import *
+import vec2text
+
 
 device = "cuda:0"
 LR = 1e-3
@@ -22,30 +24,82 @@ def get_data_embds(t5):
     return data_embds
 
 
-t5 = SentenceTransformer("sentence-transformers/sentence-t5-base")
-embds = get_initial_embds(t5)
-data_embds = get_data_embds(t5)
+def get_single_loss(t5, text, data_embds):
+    embds = t5.encode(text, normalize_embeddings=True, show_progress_bar=False, convert_to_tensor=True)
 
-# optimizer = torch.optim.AdamW([embds], lr=LR)
-optimizer = torch.optim.LBFGS([embds], lr=LR, max_iter=10, history_size=10, line_search_fn='strong_wolfe')
+    with torch.no_grad():
+        loss = -(F.cosine_similarity(embds[None], data_embds) ** 3).mean()
 
-
-def closure():
-    optimizer.zero_grad()
-    loss = -(F.cosine_similarity(embds.unsqueeze(0), data_embds) ** 3).mean()
-    loss.backward()
     return loss
 
 
-for epoch in range(EPOCHS):
-    # optimizer.zero_grad()
-    # loss = -(F.cosine_similarity(embds.unsqueeze(0), data_embds) ** 3).mean()
-    # loss.backward()
-    # optimizer.step()
+def opt_embds(max_iter=2):
+    t5 = SentenceTransformer("sentence-transformers/sentence-t5-base", device=device)
 
-    optimizer.step(closure)
-    loss = closure()
+    embds = get_initial_embds(t5)
+    data_embds = get_data_embds(t5)
+
+    # optimizer = torch.optim.AdamW([embds], lr=LR)
+    optimizer = torch.optim.LBFGS([embds], lr=LR, max_iter=max_iter, history_size=10, line_search_fn='strong_wolfe')
+
+
+    def closure():
+        optimizer.zero_grad()
+        loss = -(F.cosine_similarity(embds[None], data_embds) ** 3).mean()
+        loss.backward()
+        return loss
+
+
+    for epoch in range(EPOCHS):
+        # optimizer.zero_grad()
+        # loss = -(F.cosine_similarity(embds.unsqueeze(0), data_embds) ** 3).mean()
+        # loss.backward()
+        # optimizer.step()
+
+        optimizer.step(closure)
+        loss = closure()
+        
+        if epoch % DISP_STEPS == 0:
+            print(f"Epoch {epoch}, Loss: {loss.item()}")
+
+    embds = embds.detach()
+
+    return embds, data_embds
+
+
+def run():
+    t5 = SentenceTransformer("sentence-transformers/sentence-t5-base", device=device)
+
+    model_path = "/home/mpf/code/kaggle/vec2text/vec2text/saves/t5-prompts/checkpoint-6000/"
+    model = vec2text.models.InversionModel.from_pretrained(model_path).to(device)
+
+    # embds, data_embds = opt_embds()
+    # torch.save((embds, data_embds), "embds.pt")
     
-    if epoch % DISP_STEPS == 0:
-        print(f"Epoch {epoch}, Loss: {loss.item()}")
+    embds, data_embds = torch.load("embds.pt")
+
+    result = model.generate(
+        inputs={
+            "frozen_embeddings": embds[None].to(device)
+        },
+        generation_kwargs={
+            "early_stopping": False,
+            "num_beams": 1,
+            "do_sample": False,
+            "no_repeat_ngram_size": 0,
+            "min_length": 1,
+            "max_length": 128,
+        },
+    )
+
+    output = model.tokenizer.batch_decode(result)[0]
+    loss = get_single_loss(t5, output, data_embds)
+
+    print(loss)
+    import pdb; pdb.set_trace()
+    
+
+if __name__ == "__main__":
+    run()
+
 

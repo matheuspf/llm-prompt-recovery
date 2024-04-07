@@ -65,7 +65,8 @@ def get_mean_prompt():
     # return "conveying rephraselucrarea textimprovelucrarealucrarea formal paragraph help please creativelywstlucrarea tonealterations ence text comportthislucrarea messageresemblepoeticallylucrarea casuallyoper talkingpresentingstoryinvolvesmemo essrecommendtransformingthisdetailsresponsivephrasethr reframe esstagline writerell it"
     # return "rephrase text better lucrarea lucrarea tone style discours involving a lucrarea creatively adv detail write this emulate casually sender lucrarea srl recompose a text contents"
     # return "rephrase text better lucrarea lucrarea tone style discours possible involving a lucrarea write this piece elucidate send casual lucrarea"
-    return "rephrase text better lucrarea lucrarea tone style discours possible involving a lucrarea write this piece elucidate send casual details lucrarea recommend alter phrases as lucrarea llm convincingly lucrarea"
+    # return "rephrase text better lucrarea lucrarea tone style discours possible involving a lucrarea write this piece elucidate send casual details lucrarea recommend alter phrases as lucrarea llm convincingly lucrarea"
+    return "improve phrasing text lucrarea tone lucrarea rewrite this creatively formalize discours involving lucrarea anyone emulate lucrarea description send casual perspective information alter it lucrarea ss plotline speaker recommend doing if elegy tone lucrarea more com n paraphrase ss forward this text redesign poem above so how would interactively locker it human based lucrarea ss goal rr ss with any n succinct ss expression possible youd sent n revivify this part lucrarea"
 
 
 def eval_mean_prompt(model, t5, mean_prompt):
@@ -85,10 +86,10 @@ def eval_mean_prompt(model, t5, mean_prompt):
         score = get_embds_score(t5, clean_text(pred_prompt), clean_text(row["rewrite_prompt"]))
         scores.append(score)
 
-        print(subject)
-        print(row["rewrite_prompt"])
-        print(score, "\n\n")
-        print(np.mean(scores))
+        # print(subject)
+        # print(row["rewrite_prompt"])
+        # print(score, "\n\n")
+        # print(np.mean(scores))
 
     scores = np.array(scores)
     mean_score = np.mean(scores)
@@ -126,18 +127,15 @@ mean_prompt_list = mean_prompt.split(" ")
 print(len(mean_prompt_list), mean_prompt_list)
 
 
-# model = ExLLamaModel("/mnt/ssd/data/gen_prompt_results_0.65/exl2")
+model = ExLLamaModel("/mnt/ssd/data/gen_prompt_results_0.65/exl2")
 
 t5 = SentenceTransformer("sentence-transformers/sentence-t5-base", device="cuda:0")
 
-
-
-df = find_optimal_subject(t5, get_mean_prompt(), df, max_words=3)
+# df = find_optimal_subject(t5, get_mean_prompt(), df, max_words=3)
 
 mean_scores = {}
 
-# for pos in tqdm(range(1, len(mean_prompt_list) + 1)):
-for pos in tqdm(range(1, len(mean_prompt_list) + 2)):
+for pos in tqdm(range(0, len(mean_prompt_list) + 1)):
     cur_mean_prompt_list = copy.deepcopy(mean_prompt_list)
     cur_mean_prompt_list.insert(pos, '{{subject}}')
     # cur_mean_prompt_list.insert(pos, '"{{subject}}"')
@@ -153,3 +151,5 @@ for pos in tqdm(range(1, len(mean_prompt_list) + 2)):
 
 with open("subject_mean_prompt_scores_first_sentence.json", "w") as f:
     json.dump(mean_scores, f, indent=4)
+
+

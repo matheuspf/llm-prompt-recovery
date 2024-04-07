@@ -18,7 +18,7 @@ from nltk.corpus import wordnet as wn
 
 
 USE_ALPHA = True
-BATCH_SIZE = 512
+BATCH_SIZE = 256
 NUM_PROCESSES = 2
 LOAD_STATE = True
 
@@ -210,7 +210,7 @@ def optimize_prompt(t5, embds, top_words, beam_width=50, num_steps=15, batch_siz
     if LOAD_STATE:
         all_beams = pickle.load(open("state.pkl", "rb"))
         best_step_result = json.load(open("./src/optimization/mean_prompt_sel_tokens_updated_alpha.json", "r"))
-        pbar = tqdm(range(len(best_step_result) - 1, num_steps))
+        pbar = tqdm(range(len(best_step_result), num_steps))
         print(len(best_step_result), len(all_beams))
 
     for step in pbar:
@@ -274,7 +274,7 @@ def run():
     # test_iters(t5, embds, beam, top_words, batch_size=BATCH_SIZE)
     # exit()
 
-    best_step_result = optimize_prompt(t5, embds, top_words, beam_width=400, num_steps=70, batch_size=BATCH_SIZE)
+    best_step_result = optimize_prompt(t5, embds, top_words, beam_width=400, num_steps=71, batch_size=BATCH_SIZE)
     best = best_step_result[-1]
 
     print(best)
