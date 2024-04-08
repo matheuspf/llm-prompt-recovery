@@ -8,12 +8,12 @@ weights_path = "mistralai/Mistral-7B-Instruct-v0.2"
 loras_path = "./results/checkpoint-5000"
 out_path = "./results/merged"
 
-bnb_config = BitsAndBytesConfig(
-    load_in_4bit=True,
-    bnb_4bit_quant_type="nf4",
-    bnb_4bit_compute_dtype=torch.bfloat16,
-    bnb_4bit_use_double_quant=True,
-)
+# bnb_config = BitsAndBytesConfig(
+#     load_in_4bit=True,
+#     bnb_4bit_quant_type="nf4",
+#     bnb_4bit_compute_dtype=torch.bfloat16,
+#     bnb_4bit_use_double_quant=True,
+# )
 model = AutoModelForCausalLM.from_pretrained(
     weights_path,
     # quantization_config=bnb_config,

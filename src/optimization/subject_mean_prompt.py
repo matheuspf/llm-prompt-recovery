@@ -64,9 +64,8 @@ def get_mean_prompt():
     # return "Rewrite this text convey manner human evokes text better exude genre plath tone cut include object being about please further wise this individuals could originally convey here."
     # return "conveying rephraselucrarea textimprovelucrarealucrarea formal paragraph help please creativelywstlucrarea tonealterations ence text comportthislucrarea messageresemblepoeticallylucrarea casuallyoper talkingpresentingstoryinvolvesmemo essrecommendtransformingthisdetailsresponsivephrasethr reframe esstagline writerell it"
     # return "rephrase text better lucrarea lucrarea tone style discours involving a lucrarea creatively adv detail write this emulate casually sender lucrarea srl recompose a text contents"
-    # return "rephrase text better lucrarea lucrarea tone style discours possible involving a lucrarea write this piece elucidate send casual lucrarea"
-    # return "rephrase text better lucrarea lucrarea tone style discours possible involving a lucrarea write this piece elucidate send casual details lucrarea recommend alter phrases as lucrarea llm convincingly lucrarea"
-    return "improve phrasing text lucrarea tone lucrarea rewrite this creatively formalize discours involving lucrarea anyone emulate lucrarea description send casual perspective information alter it lucrarea ss plotline speaker recommend doing if elegy tone lucrarea more com n paraphrase ss forward this text redesign poem above so how would interactively locker it human based lucrarea ss goal rr ss with any n succinct ss expression possible youd sent n revivify this part lucrarea"
+
+    return "improve phrasing text lucrarea tone lucrarea rewrite this creatively formalize discours involving lucrarea anyone emulate lucrarea description send casual perspective information alter it lucrarea ss plotline speaker recommend doing if elegy tone lucrarea more com n paraphrase ss forward this st text redesign poem above etc possible llm clear lucrarea"
 
 
 def eval_mean_prompt(model, t5, mean_prompt):

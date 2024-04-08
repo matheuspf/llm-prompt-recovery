@@ -1,0 +1,352 @@
+[
+    {
+        "step": 0,
+        "score": 0.5174947381019592,
+        "text": "wordiness"
+    },
+    {
+        "step": 1,
+        "score": 0.5822036862373352,
+        "text": "rephrase text"
+    },
+    {
+        "step": 2,
+        "score": 0.6107921004295349,
+        "text": "rephrase text lucrarea"
+    },
+    {
+        "step": 3,
+        "score": 0.6326320171356201,
+        "text": "rephrase text better lucrarea"
+    },
+    {
+        "step": 4,
+        "score": 0.6381629705429077,
+        "text": "rephrase text better lucrarea tone"
+    },
+    {
+        "step": 5,
+        "score": 0.6455997824668884,
+        "text": "rephrase text better lucrarea tone involved"
+    },
+    {
+        "step": 6,
+        "score": 0.6526047587394714,
+        "text": "rephrase text better lucrarea tone involved lucrarea"
+    },
+    {
+        "step": 7,
+        "score": 0.6550222635269165,
+        "text": "rephrase text better lucrarea tone lucrarea wordform involved"
+    },
+    {
+        "step": 8,
+        "score": 0.6561077833175659,
+        "text": "rephrase text better lucrarea lucrarea tone wordform possible involved"
+    },
+    {
+        "step": 9,
+        "score": 0.6594595313072205,
+        "text": "rephrase text better lucrarea lucrarea tone wordform possible involving lucrarea"
+    },
+    {
+        "step": 10,
+        "score": 0.6622352600097656,
+        "text": "rephrase text better lucrarea lucrarea tone wordform possible prompt conveying lucrarea"
+    },
+    {
+        "step": 11,
+        "score": 0.6637008190155029,
+        "text": "rephrase text better lucrarea lucrarea tone wordform possible involving a writin lucrarea"
+    },
+    {
+        "step": 12,
+        "score": 0.6652376651763916,
+        "text": "rephrase text better lucrarea lucrarea tone wordform possible involving a writin lucrarea discours"
+    },
+    {
+        "step": 13,
+        "score": 0.667472243309021,
+        "text": "rephrase text better lucrarea lucrarea tone wordform possible involving a lucrarea discours penned detail"
+    },
+    {
+        "step": 14,
+        "score": 0.6690300107002258,
+        "text": "rephrase text better lucrarea lucrarea tone wordform possible involving a lucrarea discours penned recommend detail"
+    },
+    {
+        "step": 15,
+        "score": 0.6709132790565491,
+        "text": "rephrase text better lucrarea lucrarea tone wordform possible involving a lucrarea discours penned recommend detail lucrarea"
+    },
+    {
+        "step": 16,
+        "score": 0.67252516746521,
+        "text": "rephrase text better lucrarea lucrarea tone wordform possible involving a lucrarea discours penned detail emulate lucrarea urgent"
+    },
+    {
+        "step": 17,
+        "score": 0.6744978427886963,
+        "text": "rephrase text better lucrarea lucrarea tone wordform possible involving a lucrarea discours penned detail make this emulate lucrarea"
+    },
+    {
+        "step": 18,
+        "score": 0.6769812703132629,
+        "text": "rephrase text better lucrarea lucrarea tone wordform possible involving a lucrarea discours penned detail make this emulate casual lucrarea"
+    },
+    {
+        "step": 19,
+        "score": 0.6783109307289124,
+        "text": "rephrase text better lucrarea lucrarea tone wordform possible involving a lucrarea discours penned detail make this emulate casual forward lucrarea"
+    },
+    {
+        "step": 20,
+        "score": 0.6789875030517578,
+        "text": "rephrase text better lucrarea lucrarea tone wordform possible involving a lucrarea discours penned detail make this emulate casual forward lucrarea text"
+    },
+    {
+        "step": 21,
+        "score": 0.6799657344818115,
+        "text": "rephrase text better lucrarea lucrarea tone wordform possible involving a lucrarea discours penned detail make this emulate casual lucrarea send standpoint someone"
+    },
+    {
+        "step": 22,
+        "score": 0.6804743409156799,
+        "text": "rephrase text better lucrarea lucrarea tone wordform possible involving a lucrarea discours penned detail make this emulate casual lucrarea send perspective suggestions lucrarea"
+    },
+    {
+        "step": 23,
+        "score": 0.6805936098098755,
+        "text": "rephrase text better lucrarea lucrarea tone wordform possible involving a lucrarea discours penned detail make this emulate casual lucrarea send standpoint someone act recommend"
+    },
+    {
+        "step": 24,
+        "score": 0.6813039183616638,
+        "text": "rephrase text better lucrarea lucrarea tone wordform possible involving a lucrarea discours penned detail make this emulate casual lucrarea send standpoint someone act recommend lucrarea"
+    },
+    {
+        "step": 25,
+        "score": 0.6814929842948914,
+        "text": "rephrase text better lucrarea lucrarea tone wordform possible involving a lucrarea discours penned detail make this emulate casual lucrarea send standpoint someone act recommend lucrarea mystique"
+    },
+    {
+        "step": 26,
+        "score": 0.6819405555725098,
+        "text": "rephrase text better lucrarea lucrarea tone wordform possible involving a lucrarea discours penned detail make this emulate casual lucrarea send standpoint someone act recommend lucrarea mystique etc"
+    },
+    {
+        "step": 27,
+        "score": 0.6824148297309875,
+        "text": "rephrase text better lucrarea lucrarea tone wordform possible involving a lucrarea discours penned detail make this emulate casual lucrarea send standpoint someone act recommend lucrarea mystique etc ways"
+    },
+    {
+        "step": 28,
+        "score": 0.6827690601348877,
+        "text": "rephrase text better lucrarea lucrarea tone wordform possible involving a lucrarea discours penned detail make this emulate casual lucrarea send standpoint someone act recommend lucrarea mystique etc ways ol"
+    },
+    {
+        "step": 29,
+        "score": 0.6832066774368286,
+        "text": "rephrase text better lucrarea lucrarea tone wordform possible involving a lucrarea discours penned detail make this emulate casual lucrarea send standpoint someone act recommend lucrarea mystique etc ways re delivering"
+    },
+    {
+        "step": 30,
+        "score": 0.6841208934783936,
+        "text": "rephrase text better lucrarea lucrarea tone wordform possible involving a lucrarea discours penned detail make this emulate casual lucrarea send standpoint someone act recommend lucrarea mystique etc ways n updated tone"
+    },
+    {
+        "step": 31,
+        "score": 0.6846569180488586,
+        "text": "rephrase text better lucrarea lucrarea tone wordform possible involving a lucrarea discours penned detail make this emulate casual lucrarea send standpoint someone act recommend lucrarea mystique etc ways n updated tone wise"
+    },
+    {
+        "step": 32,
+        "score": 0.6851187944412231,
+        "text": "rephrase text better lucrarea lucrarea tone wordform possible involving a lucrarea discours penned detail make this emulate casual lucrarea send standpoint someone act recommend lucrarea mystique etc ways n updated tone wise above"
+    },
+    {
+        "step": 33,
+        "score": 0.6856304407119751,
+        "text": "rephrase text better lucrarea lucrarea tone wordform possible involving a lucrarea discours penned detail make this emulate casual lucrarea send standpoint someone act recommend lucrarea mystique etc ways n updated tone wise segments above"
+    },
+    {
+        "step": 34,
+        "score": 0.6858223676681519,
+        "text": "rephrase text better lucrarea lucrarea tone wordform possible involving a lucrarea discours penned detail make this emulate casual lucrarea send standpoint someone act recommend lucrarea mystique etc ways n updated tone wise segments it above"
+    },
+    {
+        "step": 35,
+        "score": 0.6861465573310852,
+        "text": "rephrase text better lucrarea lucrarea tone wordform possible involving a lucrarea discours penned detail make this emulate casual lucrarea send standpoint someone act recommend lucrarea mystique etc ways n updated tone wise segments lucrarea urgent above"
+    },
+    {
+        "step": 36,
+        "score": 0.6864275336265564,
+        "text": "rephrase text better lucrarea lucrarea tone wordform possible involving a lucrarea discours penned detail make this emulate casual lucrarea send standpoint someone act recommend lucrarea mystique etc ways n updated tone wise segments it lucrarea urgent above"
+    },
+    {
+        "step": 37,
+        "score": 0.6870987415313721,
+        "text": "rephrase text better lucrarea lucrarea tone wordform possible involving a lucrarea discours penned detail make this emulate casual lucrarea send standpoint someone act recommend lucrarea mystique etc ways n updated tone wise segments lucrarea urgent above paraphrase it"
+    },
+    {
+        "step": 38,
+        "score": 0.6871285438537598,
+        "text": "rephrase text better lucrarea lucrarea tone wordform possible involving a lucrarea discours penned detail make this emulate casual lucrarea send standpoint someone act recommend lucrarea mystique etc ways n updated tone wise segments lucrarea urgent above paraphrase it creatively"
+    },
+    {
+        "step": 39,
+        "score": 0.6872727870941162,
+        "text": "rephrase text better lucrarea lucrarea tone wordform possible involving a lucrarea discours penned detail make this emulate casual lucrarea send standpoint someone act recommend lucrarea mystique etc ways n updated tone wise segments lucrarea urgent above paraphrase it da envisioning"
+    },
+    {
+        "step": 40,
+        "score": 0.6878114938735962,
+        "text": "rephrase text better lucrarea lucrarea tone wordform possible involving a lucrarea discours penned detail make this emulate casual lucrarea send standpoint someone act recommend lucrarea mystique etc ways n updated tone wise segments lucrarea urgent above paraphrase it befitting dream ednas"
+    },
+    {
+        "step": 41,
+        "score": 0.6886799931526184,
+        "text": "rephrase text better lucrarea lucrarea tone wordform possible involving a lucrarea discours penned detail make this emulate casual lucrarea send standpoint someone act recommend lucrarea mystique etc ways n updated tone wise segments lucrarea urgent above paraphrase it befitting dream email exposition"
+    },
+    {
+        "step": 42,
+        "score": 0.6890713572502136,
+        "text": "rephrase text better lucrarea lucrarea tone wordform possible involving a lucrarea discours penned detail make this emulate casual lucrarea send standpoint someone act recommend lucrarea mystique etc ways n updated tone wise segments lucrarea urgent above paraphrase it befitting dream email retell lucrarea"
+    },
+    {
+        "step": 43,
+        "score": 0.6897700428962708,
+        "text": "rephrase text better lucrarea lucrarea tone wordform possible involving a lucrarea discours penned detail make this emulate casual lucrarea send standpoint someone act recommend lucrarea mystique etc ways n updated tone wise segments lucrarea urgent above paraphrase it befitting dream email based retell lucrarea"
+    },
+    {
+        "step": 44,
+        "score": 0.6898746490478516,
+        "text": "rephrase text better lucrarea lucrarea tone wordform possible involving a lucrarea discours penned detail make this emulate casual lucrarea send standpoint someone act recommend lucrarea mystique etc ways n updated tone wise segments lucrarea urgent above paraphrase it befitting dream email based piece retell lucrarea"
+    },
+    {
+        "step": 45,
+        "score": 0.6899771094322205,
+        "text": "rephrase text better lucrarea lucrarea tone wordform possible involving a lucrarea discours penned detail make this emulate casual lucrarea send standpoint someone act recommend lucrarea mystique etc ways n updated tone wise segments lucrarea urgent above paraphrase it befitting dream email based retell lucrarea ss do"
+    },
+    {
+        "step": 46,
+        "score": 0.690214216709137,
+        "text": "rephrase text better lucrarea lucrarea tone wordform possible involving a lucrarea discours penned detail make this emulate casual lucrarea send standpoint someone act recommend lucrarea mystique etc ways n updated tone wise segments lucrarea urgent above paraphrase it befitting dream email based exposition lucrarea ol do else"
+    },
+    {
+        "step": 47,
+        "score": 0.6907531023025513,
+        "text": "rephrase text better lucrarea lucrarea tone wordform possible involving a lucrarea discours penned detail make this emulate casual lucrarea send standpoint someone act recommend lucrarea mystique etc ways n updated tone wise segments lucrarea urgent above paraphrase it befitting dream email based retell lucrarea ss do as lo"
+    },
+    {
+        "step": 48,
+        "score": 0.6908722519874573,
+        "text": "rephrase text better lucrarea lucrarea tone wordform possible involving a lucrarea discours penned detail make this emulate casual lucrarea send standpoint someone act recommend lucrarea mystique etc ways n updated tone wise segments lucrarea urgent above paraphrase it befitting dream email based retell lucrarea ss do as lo it"
+    },
+    {
+        "step": 49,
+        "score": 0.6910551190376282,
+        "text": "rephrase text better lucrarea lucrarea tone wordform possible involving a lucrarea discours penned detail make this emulate casual lucrarea send standpoint someone act recommend lucrarea mystique etc ways n updated tone wise segments lucrarea urgent above paraphrase it befitting dream email based retell lucrarea ss do as lo ss sum"
+    },
+    {
+        "step": 50,
+        "score": 0.6912251114845276,
+        "text": "rephrase text better lucrarea lucrarea tone wordform possible involving a lucrarea discours penned detail make this emulate casual lucrarea send standpoint someone act recommend lucrarea mystique etc ways n updated tone wise segments lucrarea urgent above paraphrase it befitting dream email based retell lucrarea ss do as lo ss d sum"
+    },
+    {
+        "step": 51,
+        "score": 0.6915690898895264,
+        "text": "rephrase text better lucrarea lucrarea tone wordform possible involving a lucrarea discours penned detail make this emulate casual lucrarea send standpoint someone act recommend lucrarea mystique etc ways n updated tone wise segments lucrarea urgent above paraphrase it befitting dream email based retell lucrarea ss do as lo ss d n educe"
+    },
+    {
+        "step": 52,
+        "score": 0.6919331550598145,
+        "text": "rephrase text better lucrarea lucrarea tone wordform possible involving a lucrarea discours penned detail make this emulate casual lucrarea send standpoint someone act recommend lucrarea mystique etc ways n updated tone wise segments lucrarea urgent above paraphrase it befitting dream email based retell lucrarea ss do as lo ss d n educe ol"
+    },
+    {
+        "step": 53,
+        "score": 0.6920532584190369,
+        "text": "rephrase text better lucrarea lucrarea tone wordform possible involving a lucrarea discours penned detail make this emulate casual lucrarea send standpoint someone act recommend lucrarea mystique etc ways n updated tone wise segments lucrarea urgent above paraphrase it befitting dream email based retell lucrarea ss do as lo ss d n educe e it"
+    },
+    {
+        "step": 54,
+        "score": 0.692254364490509,
+        "text": "rephrase text better lucrarea lucrarea tone wordform possible involving a lucrarea discours penned detail make this emulate casual lucrarea send standpoint someone act recommend lucrarea mystique etc ways n updated tone wise segments lucrarea urgent above paraphrase it befitting dream email based retell lucrarea ss do as lo ss d n educe ol sure boy"
+    },
+    {
+        "step": 55,
+        "score": 0.6926777362823486,
+        "text": "rephrase text better lucrarea lucrarea tone wordform possible involving a lucrarea discours penned detail make this emulate casual lucrarea send standpoint someone act recommend lucrarea mystique etc ways n updated tone wise segments lucrarea urgent above paraphrase it befitting dream email based retell lucrarea ss do as lo ss d n educe ol sure boy else"
+    },
+    {
+        "step": 56,
+        "score": 0.6924855709075928,
+        "text": "rephrase text better lucrarea lucrarea tone wordform possible involving a lucrarea discours penned detail make this emulate casual lucrarea send standpoint someone act recommend lucrarea mystique etc ways n updated tone wise segments lucrarea urgent above paraphrase it befitting dream email based retell lucrarea ss do as lo ss d n educe ol e n sure boy"
+    },
+    {
+        "step": 57,
+        "score": 0.6928632855415344,
+        "text": "rephrase text better lucrarea lucrarea tone wordform possible involving a lucrarea discours penned detail make this emulate casual lucrarea send standpoint someone act recommend lucrarea mystique etc ways n updated tone wise segments lucrarea urgent above paraphrase it befitting dream email based retell lucrarea ss do as lo ss d n educe ol e n sure boy else"
+    },
+    {
+        "step": 58,
+        "score": 0.6929121613502502,
+        "text": "rephrase text better lucrarea lucrarea tone wordform possible involving a lucrarea discours penned detail make this emulate casual lucrarea send standpoint someone act recommend lucrarea mystique etc ways n updated tone wise segments lucrarea urgent above paraphrase it befitting dream email based retell lucrarea ss do as lo ss d n educe ol sure boy else n reframe lucrarea"
+    },
+    {
+        "step": 59,
+        "score": 0.6934492588043213,
+        "text": "rephrase text better lucrarea lucrarea tone wordform possible involving a lucrarea discours penned detail make this emulate casual lucrarea send standpoint someone act recommend lucrarea mystique etc ways n updated tone wise segments lucrarea urgent above paraphrase it befitting dream email based retell lucrarea ss do as lo ss d n educe ol sure boy else n reframe d piece"
+    },
+    {
+        "step": 60,
+        "score": 0.6936584115028381,
+        "text": "rephrase text better lucrarea lucrarea tone wordform possible involving a lucrarea discours penned detail make this emulate casual lucrarea send standpoint someone act recommend lucrarea mystique etc ways n updated tone wise segments lucrarea urgent above paraphrase it befitting dream email based retell lucrarea ss do as lo ss d n educe ol sure boy else n reframe d piece lucrarea"
+    },
+    {
+        "step": 61,
+        "score": 0.6938076615333557,
+        "text": "rephrase text better lucrarea lucrarea tone wordform possible involving a lucrarea discours penned detail make this emulate casual lucrarea send standpoint someone act recommend lucrarea mystique etc ways n updated tone wise segments lucrarea urgent above paraphrase it befitting dream email based retell lucrarea ss do as lo ss d n educe ol sure boy else n reframe d piece dynamic text"
+    },
+    {
+        "step": 62,
+        "score": 0.6940058469772339,
+        "text": "rephrase text better lucrarea lucrarea tone wordform possible involving a lucrarea discours penned detail make this emulate casual lucrarea send standpoint someone act recommend lucrarea mystique etc ways n updated tone wise segments lucrarea urgent above paraphrase it befitting dream email based retell lucrarea ss do as lo ss d n educe ol sure boy else n reframe d piece dynamic text lucrarea"
+    },
+    {
+        "step": 63,
+        "score": 0.6945626139640808,
+        "text": "rephrase text better lucrarea lucrarea tone wordform possible involving a lucrarea discours penned detail make this emulate casual lucrarea send standpoint someone act recommend lucrarea mystique etc ways n updated tone wise segments lucrarea urgent above paraphrase it befitting dream email based retell lucrarea ss do as lo ss d n educe ol sure boy else n reframe d piece dynamic text casually activist"
+    },
+    {
+        "step": 64,
+        "score": 0.6949369311332703,
+        "text": "rephrase text better lucrarea lucrarea tone wordform possible involving a lucrarea discours penned detail make this emulate casual lucrarea send standpoint someone act recommend lucrarea mystique etc ways n updated tone wise segments lucrarea urgent above paraphrase it befitting dream email based retell lucrarea ss do as lo ss d n educe ol sure boy else n reframe d piece dynamic text casually activist lucrarea"
+    },
+    {
+        "step": 65,
+        "score": 0.6954994201660156,
+        "text": "rephrase text better lucrarea lucrarea tone wordform possible involving a lucrarea discours penned detail make this emulate casual lucrarea send standpoint someone act recommend lucrarea mystique etc ways n updated tone wise segments lucrarea urgent above paraphrase it befitting dream email based retell lucrarea ss do as lo ss d n educe ol sure boy else n reframe d piece dynamic text casually activist style lucrarea"
+    },
+    {
+        "step": 66,
+        "score": 0.6955397725105286,
+        "text": "rephrase text better lucrarea lucrarea tone wordform possible involving a lucrarea discours penned detail make this emulate casual lucrarea send standpoint someone act recommend lucrarea mystique etc ways n updated tone wise segments lucrarea urgent above paraphrase it befitting dream email based retell lucrarea ss do as lo ss d n educe ol sure boy else n reframe d piece dynamic text casually activist style ss lucrarea"
+    },
+    {
+        "step": 67,
+        "score": 0.6956141591072083,
+        "text": "rephrase text better lucrarea lucrarea tone wordform possible involving a lucrarea discours penned detail make this emulate casual lucrarea send standpoint someone act recommend lucrarea mystique etc ways n updated tone wise segments lucrarea urgent above paraphrase it befitting dream email based retell lucrarea ss do as lo ss d n educe ol sure boy else n reframe d piece dynamic text casually activist style lucrarea llm it"
+    },
+    {
+        "step": 68,
+        "score": 0.6956722736358643,
+        "text": "rephrase text better lucrarea lucrarea tone wordform possible involving a lucrarea discours penned detail make this emulate casual lucrarea send standpoint someone act recommend lucrarea mystique etc ways n updated tone wise segments lucrarea urgent above paraphrase it befitting dream email based retell lucrarea ss do as lo ss d n educe ol sure boy else n reframe d piece dynamic text casually activist style lucrarea ss it out"
+    },
+    {
+        "step": 69,
+        "score": 0.6958496570587158,
+        "text": "rephrase text better lucrarea lucrarea tone wordform possible involving a lucrarea discours penned detail make this emulate casual lucrarea send standpoint someone act recommend lucrarea mystique etc ways n updated tone wise segments lucrarea urgent above paraphrase it befitting dream email based retell lucrarea ss do as lo ss d n educe ol sure boy else n reframe d piece dynamic text casually activist style lucrarea s s e it"
+    }
+]

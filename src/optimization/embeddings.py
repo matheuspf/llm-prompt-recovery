@@ -28,7 +28,7 @@ def get_single_loss(t5, text, data_embds):
     embds = t5.encode(text, normalize_embeddings=True, show_progress_bar=False, convert_to_tensor=True)
 
     with torch.no_grad():
-        loss = -(F.cosine_similarity(embds[None], data_embds) ** 3).mean()
+        loss = (F.cosine_similarity(embds[None], data_embds) ** 3).mean()
 
     return loss
 
@@ -70,31 +70,43 @@ def opt_embds(max_iter=2):
 def run():
     t5 = SentenceTransformer("sentence-transformers/sentence-t5-base", device=device)
 
-    model_path = "/home/mpf/code/kaggle/vec2text/vec2text/saves/t5-prompts/checkpoint-6000/"
-    model = vec2text.models.InversionModel.from_pretrained(model_path).to(device)
+    inversion_model_path = "/home/mpf/code/kaggle/vec2text/vec2text/saves/t5-prompts/checkpoint-10000/"
+    corrector_model_path = "/home/mpf/code/kaggle/vec2text/vec2text/saves/t5-corrector-1/checkpoint-28000/"
+
+    inversion_model = vec2text.models.InversionModel.from_pretrained(inversion_model_path).to(device)
+    corrector_model = vec2text.models.CorrectorEncoderModel.from_pretrained(corrector_model_path).to(device)
+    corrector = vec2text.load_corrector(inversion_model, corrector_model)
 
     # embds, data_embds = opt_embds()
     # torch.save((embds, data_embds), "embds.pt")
     
     embds, data_embds = torch.load("embds.pt")
 
-    result = model.generate(
-        inputs={
-            "frozen_embeddings": embds[None].to(device)
-        },
-        generation_kwargs={
-            "early_stopping": False,
-            "num_beams": 1,
-            "do_sample": False,
-            "no_repeat_ngram_size": 0,
-            "min_length": 1,
-            "max_length": 128,
-        },
-    )
+    output = vec2text.invert_embeddings(
+        embeddings=embds[None].to(device),
+        corrector=corrector,
+        num_steps=100
+    )[0]
 
-    output = model.tokenizer.batch_decode(result)[0]
+    # result = model.generate(
+    #     inputs={
+    #         "frozen_embeddings": embds[None].to(device)
+    #     },
+    #     generation_kwargs={
+    #         "early_stopping": False,
+    #         "num_beams": 1,
+    #         "do_sample": False,
+    #         "no_repeat_ngram_size": 0,
+    #         "min_length": 1,
+    #         "max_length": 128,
+    #     },
+    # )
+    # output = model.tokenizer.batch_decode(result)[0]
+
+    output = " ".join([t for t in output.split(" ") if t.isalnum()])
     loss = get_single_loss(t5, output, data_embds)
 
+    print(output)
     print(loss)
     import pdb; pdb.set_trace()
     
