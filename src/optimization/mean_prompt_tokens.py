@@ -244,13 +244,6 @@ def run():
 
     # df = get_dataset_pedro_lowercase()
     df = get_gen_sel_dataset()
-
-    sel_idx = []
-    for idx, row in df.iterrows():
-        if len(row["original_text"]) < len(row["rewritten_text"]):
-            sel_idx.append(idx)
-    df = df.iloc[sel_idx]
-
     
     text_list = df["rewrite_prompt"].tolist()
     text_list = ["".join([t for t in text if t.isalpha() or t in (" ",)]).lower() for text in text_list]
