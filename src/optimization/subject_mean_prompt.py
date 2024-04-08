@@ -65,7 +65,8 @@ def get_mean_prompt():
     # return "conveying rephraselucrarea textimprovelucrarealucrarea formal paragraph help please creativelywstlucrarea tonealterations ence text comportthislucrarea messageresemblepoeticallylucrarea casuallyoper talkingpresentingstoryinvolvesmemo essrecommendtransformingthisdetailsresponsivephrasethr reframe esstagline writerell it"
     # return "rephrase text better lucrarea lucrarea tone style discours involving a lucrarea creatively adv detail write this emulate casually sender lucrarea srl recompose a text contents"
 
-    return "improve phrasing text lucrarea tone lucrarea rewrite this creatively formalize discours involving lucrarea anyone emulate lucrarea description send casual perspective information alter it lucrarea ss plotline speaker recommend doing if elegy tone lucrarea more com n paraphrase ss forward this st text redesign poem above etc possible llm clear lucrarea"
+    # return "improve phrasing text lucrarea tone lucrarea rewrite this creatively formalize discours involving lucrarea anyone emulate lucrarea description send casual perspective information alter it lucrarea ss plotline speaker recommend doing if elegy tone lucrarea more com n paraphrase ss forward this st text redesign poem above etc possible llm clear lucrarea"
+    return "improve phrasing text lucrarea tone lucrarea rewrite this discours lucrarea creatively detail efef send casual via lucrarea llm paragraph alter tone like representing classic task you reframe lucrarea"
 
 
 def eval_mean_prompt(model, t5, mean_prompt):
@@ -85,10 +86,10 @@ def eval_mean_prompt(model, t5, mean_prompt):
         score = get_embds_score(t5, clean_text(pred_prompt), clean_text(row["rewrite_prompt"]))
         scores.append(score)
 
-        # print(subject)
-        # print(row["rewrite_prompt"])
-        # print(score, "\n\n")
-        # print(np.mean(scores))
+        print(subject)
+        print(row["rewrite_prompt"])
+        print(score, "\n\n")
+        print(np.mean(scores))
 
     scores = np.array(scores)
     mean_score = np.mean(scores)

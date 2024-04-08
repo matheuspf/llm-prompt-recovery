@@ -18,11 +18,10 @@ from .data import *
 from nltk.corpus import wordnet as wn
 
 
-USE_ALPHA = True
 BATCH_SIZE = 256
 NUM_PROCESSES = 2
 LOAD_STATE = False
-SAVE_ALL_BEAMS = True
+SAVE_ALL_BEAMS = False
 
 
 def clean_text(text):
@@ -79,9 +78,6 @@ def get_top_words_base(text_list):
     sorted_bow = list(sorted_bow)
     all_words = [tup[0] for tup in sorted_bow]
 
-    if not USE_ALPHA:
-        all_words += [",", ".", ":"]
-
     return all_words
 
 
@@ -108,14 +104,14 @@ def get_top_words_vocab(t5, embds, frac=0.2):
 
 def get_top_words(text_list, t5, embds, frac=0.2):
     words_base = get_top_words_base(text_list)
-    vocab_words = get_top_words_vocab(t5, embds, frac=frac)
+    # vocab_words = get_top_words_vocab(t5, embds, frac=frac)
     words_pub = get_top_words_base(get_dataset_pub()["rewrite_prompt"].tolist())
     words_gpt = get_top_words_base(get_dataset_gpt()["rewrite_prompt"].tolist())
     common_words = open("/kaggle/input/common_words.txt", "r").read().split("\n")
     synonyms = get_synonyms()
 
-    all_words = list(set(words_base + words_pub + words_gpt + vocab_words + common_words + synonyms))
-    # all_words = list(set(words_base + words_pub + words_gpt + common_words + synonyms))
+    # all_words = list(set(words_base + words_pub + words_gpt + vocab_words + common_words + synonyms))
+    all_words = list(set(words_base + words_pub + words_gpt + common_words + synonyms))
     all_words = [clean_text(word) for word in all_words]
     all_words = list(set(all_words))
     
@@ -125,21 +121,7 @@ def get_top_words(text_list, t5, embds, frac=0.2):
 
 
 def get_text(words_list):
-    text = " ".join(words_list)
-    return text
-    
-    # text = text.replace(" ,", ",").replace(" .", ".").replace(" :", ":")
-
-    if USE_ALPHA:
-        return text
-
-    text = text[0].upper() + text[1:]
-    
-    if len(words_list) >= 3:
-        text = text + "."
-        # text = text + " to ."
-    
-    return text
+    return " ".join(words_list)
 
 
 def get_beam_score(words, embd_score, alpha=0.1):
@@ -210,11 +192,11 @@ def optimize_prompt(t5, embds, top_words, beam_width=50, num_steps=15, batch_siz
     all_beams_list = []
 
     if LOAD_STATE:
-        all_beams = pickle.load(open("state.pkl", "rb"))
+        all_beams = pickle.load(open("./src/optimization/outputs/state.pkl", "rb"))
         best_step_result = json.load(open("./src/optimization/mean_prompt_sel_tokens_updated_alpha.json", "r"))
         pbar = tqdm(range(len(best_step_result), num_steps))
-        if os.path.exists("all_beams.pkl"):
-            all_beams_list = pickle.load(open("all_beams.pkl", "rb"))
+        if os.path.exists("./src/optimization/outputs/all_beams.pkl"):
+            all_beams_list = pickle.load(open("./src/optimization/outputs/all_beams.pkl", "rb"))
         
         print(len(best_step_result), len(all_beams), len(all_beams_list))
 
@@ -233,7 +215,7 @@ def optimize_prompt(t5, embds, top_words, beam_width=50, num_steps=15, batch_siz
         if SAVE_ALL_BEAMS:
             all_beams_list += new_beams
             print(len(all_beams_list))
-            pickle.dump(all_beams_list, open("all_beams.pkl", "wb"))
+            pickle.dump(all_beams_list, open("./src/optimization/outputs/all_beams.pkl", "wb"))
 
         all_beams = sorted(new_beams, key=lambda x: x[2], reverse=True)[:beam_width]
 
@@ -250,25 +232,29 @@ def optimize_prompt(t5, embds, top_words, beam_width=50, num_steps=15, batch_siz
         result = {"step": int(step), "score": float(best[1]), "text": get_text(best[0])}
         best_step_result.append(result)
 
-        pickle.dump(all_beams, open("state.pkl", "wb"))
-        with open("./src/optimization/mean_prompt_sel_tokens_updated_alpha.json", "w") as f:
+        pickle.dump(all_beams, open("./src/optimization/outputs/state.pkl", "wb"))
+        with open("./src/optimization/outputs/org_smaller.json", "w") as f:
             json.dump(best_step_result, f, indent=4, ensure_ascii=False)
 
-    exit()
     return best_step_result
 
 
 def run():
     device = "cuda:0"
 
-    if USE_ALPHA:
-        df = get_dataset_pedro_lowercase()
-        text_list = df["rewrite_prompt"].tolist()
-        text_list = ["".join([t for t in text if t.isalpha() or t in (" ",)]).lower() for text in text_list]
+    # df = get_dataset_pedro_lowercase()
+    df = get_gen_sel_dataset()
 
-    else:
-        df = get_dataset_pedro()
-        text_list = df["rewrite_prompt"].tolist()
+    sel_idx = []
+    for idx, row in df.iterrows():
+        if len(row["original_text"]) < len(row["rewritten_text"]):
+            sel_idx.append(idx)
+    df = df.iloc[sel_idx]
+
+    
+    text_list = df["rewrite_prompt"].tolist()
+    text_list = ["".join([t for t in text if t.isalpha() or t in (" ",)]).lower() for text in text_list]
+
 
 
     t5 = SentenceTransformer("sentence-transformers/sentence-t5-base", device=device)
@@ -279,24 +265,17 @@ def run():
     print(f"Num examples: {len(text_list)}")
     print(f"Num words: {len(top_words)}")
 
-    # beam = pickle.load(open("state_700_clean.pkl", "rb"))[0]
-    beam = ("improve phrasing text lucrarea tone lucrarea rewrite this creatively formalize discours involving lucrarea anyone emulate lucrarea description send casual perspective information alter it lucrarea ss plotline speaker recommend doing if elegy tone lucrarea more com n paraphrase ss forward this text redesign poem above so how would interactively locker it human based lucrarea ss goal rr ss with any n succinct ss expression possible youd sent n revivify this part lucrarea".split(" "), 0.700191080570221, 0.700191080570221)
-    test_iters(t5, embds, beam, top_words, batch_size=BATCH_SIZE)
-    exit()
+    # # beam = pickle.load(open("state_700_clean.pkl", "rb"))[0]
+    # beam = ("improve phrasing text lucrarea tone lucrarea rewrite this creatively formalize discours involving lucrarea anyone emulate lucrarea description send casual perspective information alter it lucrarea ss plotline speaker recommend doing if elegy tone lucrarea more com n paraphrase ss forward this text redesign poem above so how would interactively locker it human based lucrarea ss goal rr ss with any n succinct ss expression possible youd sent n revivify this part lucrarea".split(" "), 0.700191080570221, 0.700191080570221)
+    # test_iters(t5, embds, beam, top_words, batch_size=BATCH_SIZE)
+    # exit()
 
-    best_step_result = optimize_prompt(t5, embds, top_words, beam_width=10, num_steps=70, batch_size=BATCH_SIZE)
+    best_step_result = optimize_prompt(t5, embds, top_words, beam_width=100, num_steps=50, batch_size=BATCH_SIZE)
     best = best_step_result[-1]
 
     print(best)
     print(calc_score(t5, best["text"], embds))
 
-    if USE_ALPHA:
-        with open("./src/optimization/mean_prompt_sel_tokens_alpha.json", "w") as f:
-            json.dump(best_step_result, f, indent=4)
-
-    else:
-        with open("./src/optimization/mean_prompt_sel_tokens_updated.json", "w") as f:
-            json.dump(best_step_result, f, indent=4)
 
 
 if __name__ == "__main__":
