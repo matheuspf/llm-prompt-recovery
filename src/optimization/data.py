@@ -53,7 +53,7 @@ def filter_df(df):
 
 
 
-def get_dataset_pub(data_path="/kaggle/input/df_with_emb.csv"):
+def get_dataset_pub(data_path="/kaggle/input/llm-prompt-recovery/df_with_emb.csv"):
     df = pd.read_csv(data_path).fillna("")
     df = df[["original_text", "rewrite_prompt", "rewritten_text"]].reset_index(drop=True)
     df = filter_df(df)
@@ -64,11 +64,11 @@ def get_dataset_pub(data_path="/kaggle/input/df_with_emb.csv"):
 def get_dataset_gpt():
     data_list = [
         # "/kaggle/input/gemma_rewritten_text_exllama/proc_dataset_updated.csv",
-        # "/kaggle/input/pedro-data/data_subject.csv",
-        # "/kaggle/input/pedro-data/data_subject_2.csv",
-        # "/kaggle/input/pedro-data/data_subject_3.csv",
+        # "/kaggle/input/llm-prompt-recovery/data_subject.csv",
+        # "/kaggle/input/llm-prompt-recovery/data_subject_2.csv",
+        # "/kaggle/input/llm-prompt-recovery/data_subject_3.csv",
         
-        "/home/mpf/code/kaggle/llm-prompt/selected_df_optim.csv"
+        "/kaggle/input/llm-prompt-recovery/selected_df_optim.csv"
     ]
     df = pd.concat([pd.read_csv(data) for data in data_list], ignore_index=True)
     df = filter_df(df)
@@ -100,15 +100,13 @@ def calc_score(t5, prompt, embds):
 
 
 def get_dataset_pedro():
-    # prompts = json.load(open("/home/mpf/code/kaggle/pedro-llm-prompt/data/prompts_selected.json"))
-    prompts = json.load(open("/home/mpf/code/kaggle/pedro-llm-prompt/data/prompts_selected_new.json"))
+    prompts = json.load(open("/kaggle/input/pedro-llm-prompt-data/prompts_selected_new.json"))
     df = pd.DataFrame({"rewrite_prompt": prompts})
     return df
 
 
 def get_dataset_pedro_lowercase():
-    # prompts = json.load(open("/home/mpf/code/kaggle/pedro-llm-prompt/data/prompts_selected_processed.json"))
-    prompts = json.load(open("/home/mpf/code/kaggle/pedro-llm-prompt/data/prompts_selected_new_processed_005.json"))
+    prompts = json.load(open("/kaggle/input/pedro-llm-prompt-data/prompts_selected_new_processed_005.json"))
     df = pd.DataFrame({"rewrite_prompt": prompts})
     return df
 

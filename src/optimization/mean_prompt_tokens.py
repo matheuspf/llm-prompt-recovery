@@ -107,7 +107,7 @@ def get_top_words(text_list, t5, embds, frac=0.2):
     # vocab_words = get_top_words_vocab(t5, embds, frac=frac)
     words_pub = get_top_words_base(get_dataset_pub()["rewrite_prompt"].tolist())
     words_gpt = get_top_words_base(get_dataset_gpt()["rewrite_prompt"].tolist())
-    common_words = open("/kaggle/input/common_words.txt", "r").read().split("\n")
+    common_words = open("/kaggle/input/llm-prompt-recovery/common_words.txt", "r").read().split("\n")
     synonyms = get_synonyms()
 
     # all_words = list(set(words_base + words_pub + words_gpt + vocab_words + common_words + synonyms))
