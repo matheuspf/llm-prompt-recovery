@@ -12,6 +12,7 @@ from sentence_transformers import SentenceTransformer
 from transformers import AutoTokenizer
 from sklearn.metrics.pairwise import cosine_similarity
 from .data import *
+from fire import Fire
 
 
 def clean_text(text):
@@ -19,26 +20,27 @@ def clean_text(text):
 
 
 BATCH_SIZE = 512
-NUM_PROCESSES = 4
+NUM_PROCESSES = 1
+LOAD_FROM_STATE = True
 
 
 def get_top_words(text_list, t5, embds):
     bow = {}
 
-    for i, text in enumerate(text_list):    
+    for i, text in enumerate(text_list):
         words = text.split()
-        
+
         for word in words:
             word = clean_text(word).strip()
-            
+
             if not word:
                 continue
 
             if word not in bow:
                 bow[word] = 0
-            
+
             bow[word] += 1
-            
+
     bow_tup = [(k, v) for k, v in bow.items()]
     sorted_bow = sorted(bow_tup, key=lambda x: x[1], reverse=True)
     sorted_bow = list(sorted_bow)
@@ -65,7 +67,9 @@ def get_beams(params):
 
     for sel_words, _, _ in pbar:
         all_text = [get_text(sel_words + [word]) for word in top_words]
-        text_embds = t5.encode(all_text, normalize_embeddings=True, show_progress_bar=False, batch_size=batch_size)
+        text_embds = t5.encode(
+            all_text, normalize_embeddings=True, show_progress_bar=False, batch_size=batch_size
+        )
         scores = (cosine_similarity(embds, text_embds) ** 3).mean(axis=0)
 
         for i, new_score in enumerate(scores):
@@ -78,23 +82,31 @@ def get_beams(params):
 
 def optimize_prompt(t5, embds, top_words, beam_width=50, num_steps=15, batch_size=256):
     all_beams = [([], 0, 0)]
-    
+
     best_step_result = []
 
-    for step in tqdm(range(num_steps)):
+    start_idx = 0
+    if LOAD_FROM_STATE:
+        all_beams = pickle.load(open("state.pkl", "rb"))
+        start_idx = 50
+
+    for step in tqdm(range(start_idx, num_steps)):
         if NUM_PROCESSES > 1:
             num_processes = min(NUM_PROCESSES, len(all_beams))
             all_beams_split = [all_beams[i::num_processes] for i in range(num_processes)]
-            params = [(all_beams_split[i], top_words, embds, t5, batch_size, i) for i in range(num_processes)]
+            params = [
+                (all_beams_split[i], top_words, embds, t5, batch_size, i)
+                for i in range(num_processes)
+            ]
 
             with Pool(processes=num_processes) as p:
                 new_beams = sum(p.map(get_beams, params), [])
-            
+
         else:
             new_beams = get_beams((all_beams, top_words, embds, t5, batch_size, 0))
-        
+
         print(len(new_beams))
-        
+
         all_beams = sorted(new_beams, key=lambda x: x[2], reverse=True)[:beam_width]
 
         # all_scores = np.array([beam[2] for beam in all_beams])
@@ -112,7 +124,7 @@ def optimize_prompt(t5, embds, top_words, beam_width=50, num_steps=15, batch_siz
 
         pickle.dump(all_beams, open("state.pkl", "wb"))
 
-        with open("./src/optimization/mean_prompt_alpha.json", "w") as f:
+        with open(f"./src/optimization/mean_prompt_alpha_cluster_{CLUSTER}.json", "w") as f:
             json.dump(best_step_result, f, indent=4)
 
     return best_step_result
@@ -128,27 +140,46 @@ def run():
     df_pub = get_dataset_pub()
     df_gpt = get_dataset_gpt()
 
-    extra_text_list = text_list + df_pub["rewrite_prompt"].tolist() + df_gpt["rewrite_prompt"].tolist()
+    extra_text_list = (
+        text_list + df_pub["rewrite_prompt"].tolist() + df_gpt["rewrite_prompt"].tolist()
+    )
     extra_text_list = [clean_text(text) for text in extra_text_list]
 
     t5 = SentenceTransformer("sentence-transformers/sentence-t5-base", device=device)
 
-    embds = t5.encode(text_list, normalize_embeddings=True, show_progress_bar=True, batch_size=BATCH_SIZE)
+    target_prompts = pd.read_csv(
+        "/home/edu/code/llm_style/data/cluster_models/2.6k_selected_prompts_with_clusters_2_3.csv"
+    )
+    target_prompts = target_prompts[target_prompts["cluster_3"] == CLUSTER]
+    target_prompts = target_prompts["rewrite_prompt"].tolist()
+    target_prompts = [clean_text(text) for text in target_prompts]
+    embds = t5.encode(
+        target_prompts, normalize_embeddings=True, show_progress_bar=True, batch_size=BATCH_SIZE
+    )
+
     top_words = get_top_words(extra_text_list, t5, embds)
 
     print(f"Num examples: {len(text_list)}")
     print(f"Num words: {len(top_words)}")
 
-    best_step_result = optimize_prompt(t5, embds, top_words, beam_width=100, num_steps=50, batch_size=BATCH_SIZE)
+    best_step_result = optimize_prompt(
+        t5, embds, top_words, beam_width=400, num_steps=100, batch_size=BATCH_SIZE
+    )
     best = best_step_result[-1]
 
     print(best)
     print(calc_score(t5, best["text"], embds))
 
-    with open("./src/optimization/mean_prompt_alpha.json", "w") as f:
+    with open(f"./src/optimization/mean_prompt_alpha_cluster_{CLUSTER}.json", "w") as f:
         json.dump(best_step_result, f, indent=4)
 
 
-if __name__ == "__main__":
-    torch.multiprocessing.set_start_method('spawn')
+def main(cluster):
+    global CLUSTER
+    CLUSTER = cluster
+    torch.multiprocessing.set_start_method("spawn")
     run()
+
+
+if __name__ == "__main__":
+    Fire(main)
